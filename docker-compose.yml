@@ -2,24 +2,43 @@ version: '3.8'
 services:
   dotnet_postgres:
     image: postgres:alpine
-    
-  dotnet_rabbitmq:
-    image: rabbitmq:3-alpine
-    
-  dotnet_minio:
-    image: minio/minio:latest
-    
-  dotnet_mongodb:
-    image: mongo:latest
-    
-  dotnet_jaeger:
-    image: jaegertracing/all-in-one:latest
-    
+    restart: always
+    environment:
+      POSTGRES_DB: DotNetHomework
+      POSTGRES_USER: sa2
+      POSTGRES_PASSWORD: 328732aA!nf;gfh
+    ports:
+      - "5432:5432"
+
   dotnet_main:
     image: dotnet-web
-    
-  dotnet_mailing:
-    image: dotnet-web
-    
-  dotnet_storage:
-    image: dotnet-web
+    ports:
+      - "8080:5000"
+
+    build:
+      dockerfile: Dotnet.Homeworks.MainProject/Dockerfile
+    depends_on:
+      - dotnet_postgres
+
+    environment:
+      ConnectionStrings__Default : Host=localhost;Database=DotNetHomework;Port=5432;Username=sa2;Password=328732aA!nf;gfh
+
+  
+
+  #dotnet_rabbitmq:
+  #  image: rabbitmq:3-alpine
+  #  
+  #dotnet_minio:
+  #  image: minio/minio:latest
+  #  
+  #dotnet_mongodb:
+  #  image: mongo:latest
+  #  
+  #dotnet_jaeger:
+  #  image: jaegertracing/all-in-one:latest
+  #  
+  #dotnet_mailing:
+  #  image: dotnet-web
+  #  
+  #dotnet_storage:
+  #  image: dotnet-web
