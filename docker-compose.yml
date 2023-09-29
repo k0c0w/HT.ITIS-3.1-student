@@ -25,9 +25,11 @@ services:
 
   
 
-  #dotnet_rabbitmq:
-  #  image: rabbitmq:3-alpine
-  #  
+  dotnet_rabbitmq:
+    image: rabbitmq:3-alpine
+    ports:
+      - "5672:5672"
+      - "15672:15672"
   #dotnet_minio:
   #  image: minio/minio:latest
   #  
@@ -37,8 +39,15 @@ services:
   #dotnet_jaeger:
   #  image: jaegertracing/all-in-one:latest
   #  
-  #dotnet_mailing:
-  #  image: dotnet-web
-  #  
+  dotnet_mailing:
+    image: dotnet-mailing
+    ports:
+      - "8081:5000"
+    
+    build:
+      dockerfile: Dotnet.Homeworks.Mailing.API/Dockerfile
+    depends_on:
+      - dotnet_rabbitmq
+    
   #dotnet_storage:
   #  image: dotnet-web
