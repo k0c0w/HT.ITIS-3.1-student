@@ -1,5 +1,7 @@
 using Dotnet.Homeworks.Data.DatabaseContext;
+using Dotnet.Homeworks.MainProject.Configuration;
 using Dotnet.Homeworks.MainProject.Services;
+using MassTransit;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,6 +16,19 @@ builder.Services.AddSingleton<ICommunicationService, CommunicationService>();
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie();
+
+
+builder.Services.AddMassTransit(options =>
+{
+    var config = builder.Configuration.GetSection("RabbitMQ").Get<RabbitMqConfig>()!;
+    var host = $"amqp://{config.Username}:{config.Password}@{config.Hostname}:{config.Port}";
+
+    options.UsingRabbitMq((context, configuration) =>
+    {
+        configuration.ConfigureEndpoints(context);
+        configuration.Host(host);
+    });
+});
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
