@@ -56,6 +56,11 @@ services:
       RabbitMQ__Password : itpkldsow12l433kkj
       RabbitMQ__Hostname : rabbitmq
       RabbitMQ__Port: 5672
+      
+      EmailConfig__Email : turkburksurk@gmail.com
+      EmailConfig__Host : smtp.gmail.com
+      EmailConfig__Port : 587
+      EmailConfig__Password : nlqpzdtqobhahxka
     
     build:
       dockerfile: Dotnet.Homeworks.Mailing.API/Dockerfile
