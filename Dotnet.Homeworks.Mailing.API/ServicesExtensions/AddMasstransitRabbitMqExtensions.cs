@@ -1,4 +1,5 @@
 using Dotnet.Homeworks.Mailing.API.Configuration;
+using Dotnet.Homeworks.Mailing.API.Consumers;
 using MassTransit;
 
 namespace Dotnet.Homeworks.Mailing.API.ServicesExtensions;
@@ -17,6 +18,7 @@ public static class AddMasstransitRabbitMqExtensions
                 configuration.ConfigureEndpoints(context);
                 configuration.Host(host);
             });
+            options.AddConsumer<EmailConsumer>();
         });
 
         return services;

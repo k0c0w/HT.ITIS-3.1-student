@@ -18,6 +18,6 @@ public class RegistrationService : IRegistrationService
         await Task.Delay(100);
         
         // publish message to a queue
-        await _communicationService.SendEmailAsync(new SendEmail("", "", "", ""));
+        await _communicationService.SendEmailAsync(new SendEmail(userDto.Name, userDto.Email, "Registration", "You have successfully registered on Dotnent App."));
     }
 }

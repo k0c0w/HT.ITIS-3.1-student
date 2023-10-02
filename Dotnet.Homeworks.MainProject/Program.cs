@@ -18,6 +18,7 @@ builder.Services.AddSingleton<ICommunicationService, CommunicationService>();
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie();
+builder.Services.AddAuthorization();
 
 builder.Services.AddMasstransitRabbitMq(rabbitMQconfig);
 
@@ -32,7 +33,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.MapGet("/", () => "Hello World!");
+app.UseRouting();
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllers();
 

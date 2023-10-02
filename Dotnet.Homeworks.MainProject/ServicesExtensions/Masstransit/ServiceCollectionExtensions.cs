@@ -1,4 +1,5 @@
 using Dotnet.Homeworks.MainProject.Configuration;
+using Dotnet.Homeworks.MainProject.Services.Publishers;
 using MassTransit;
 
 namespace Dotnet.Homeworks.MainProject.ServicesExtensions.Masstransit;
@@ -18,6 +19,7 @@ public static class ServiceCollectionExtensions
                 configuration.Host(host);
             });
         });
+        services.AddScoped<IEmailPublisher>();
 
         return services;
     }
