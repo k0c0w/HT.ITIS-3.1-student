@@ -24,13 +24,14 @@ services:
 
     environment:
       ConnectionStrings__Default : Host=localhost;Database=DotNetHomework;Port=5432;Username=sa2;Password=328732aA!nf;gfh
-      RabbitMQSettings__Username: k0c0w
-      RabbitMQSettings__Password: itpkldsow12l433kkj
-      RabbitMQSettings__Hostname: rabbitmq
-      RabbitMQSettings__Port: 5672
+      RabbitMQ__Username: k0c0w
+      RabbitMQ__Password: itpkldsow12l433kkj
+      RabbitMQ__Hostname: rabbitmq
+      RabbitMQ__Port: 5672
 
   dotnet_rabbitmq:
     image: rabbitmq:3-alpine
+    container_name: rabbitmq
     ports:
       - "5672:5672"
       - "15672:15672"
@@ -61,6 +62,7 @@ services:
       EmailConfig__Host : smtp.gmail.com
       EmailConfig__Port : 587
       EmailConfig__Password : nlqpzdtqobhahxka
+      EmailConfig__ServiceName : Dotnet Homework App 
     
     build:
       dockerfile: Dotnet.Homeworks.Mailing.API/Dockerfile
