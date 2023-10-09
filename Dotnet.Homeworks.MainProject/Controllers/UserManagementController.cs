@@ -2,12 +2,11 @@
 using Dotnet.Homeworks.MainProject.Dto;
 using Dotnet.Homeworks.MainProject.Services;
 using Microsoft.AspNetCore.Mvc;
-using System.Text.RegularExpressions;
 
 namespace Dotnet.Homeworks.MainProject.Controllers;
 
 [ApiController]
-public partial class UserManagementController : ControllerBase
+public class UserManagementController : ControllerBase
 {
     private readonly IRegistrationService _registrationService;
 
@@ -19,7 +18,7 @@ public partial class UserManagementController : ControllerBase
     [HttpPost("user")]
     public async Task<IActionResult> CreateUser(RegisterUserDto userDto, CancellationToken cancellationToken)
     {
-        if (userDto == null || !GetEmailRegex().IsMatch(userDto.Email) || string.IsNullOrEmpty(userDto.Name))
+        if (userDto == null || string.IsNullOrEmpty(userDto.Name))
             return BadRequest();
 
         await _registrationService.RegisterAsync(userDto);
@@ -56,7 +55,4 @@ public partial class UserManagementController : ControllerBase
     {
         throw new NotImplementedException();
     }
-
-    [GeneratedRegex(@"^[^$&+,:;=?@#|<>. -^*)(%!\""/№_}\[\]{{~]*$")]
-    private partial Regex GetEmailRegex();
 }
