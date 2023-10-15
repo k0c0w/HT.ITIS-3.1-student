@@ -1,6 +1,7 @@
 using Dotnet.Homeworks.Data.DatabaseContext;
 using Dotnet.Homeworks.Domain.Abstractions.Repositories;
 using Dotnet.Homeworks.Domain.Entities;
+using Dotnet.Homeworks.Domain.Exceptions;
 using Microsoft.EntityFrameworkCore;
 
 namespace Dotnet.Homeworks.DataAccess.Repositories;
@@ -26,10 +27,16 @@ public class ProductRepository : IProductRepository
 
     public async Task DeleteProductByGuidAsync(Guid id, CancellationToken cancellationToken)
     {
+        if (cancellationToken.IsCancellationRequested)
+            return;
+
         var entityToRemove = await GetByIdAsync(id, cancellationToken).ConfigureAwait(false);
 
-        if (entityToRemove == null || cancellationToken.IsCancellationRequested)
+        if (cancellationToken.IsCancellationRequested)
             return;
+
+        if (entityToRemove == null)
+            throw new EntityNotFoundException(id, typeof(Product));
 
         _ctx.Products.Remove(entityToRemove);
 
@@ -37,17 +44,19 @@ public class ProductRepository : IProductRepository
             StopTrackingEntryById(id);
     }
 
-    public Task UpdateProductAsync(Product product, CancellationToken cancellationToken)
+    public async Task UpdateProductAsync(Product product, CancellationToken cancellationToken)
     {
-        if  (cancellationToken.IsCancellationRequested)
-            return Task.CompletedTask;
+        if (cancellationToken.IsCancellationRequested)
+            return;
+
+        var previousEntry = await GetByIdAsync(product.Id, cancellationToken).ConfigureAwait(false);
+        if (previousEntry == null)
+            throw new EntityNotFoundException(product.Id, typeof(Product));
 
         _ctx.Products.Update(product);
 
         if (cancellationToken.IsCancellationRequested)
             StopTrackingEntryById(product.Id);
-
-        return Task.CompletedTask;
     }
 
     public async Task<Guid> InsertProductAsync(Product product, CancellationToken cancellationToken)
