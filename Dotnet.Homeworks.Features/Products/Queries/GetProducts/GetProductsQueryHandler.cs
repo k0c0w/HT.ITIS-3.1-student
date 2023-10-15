@@ -1,12 +1,11 @@
 using Dotnet.Homeworks.Domain.Abstractions.Repositories;
-using Dotnet.Homeworks.Domain.Entities;
 using Dotnet.Homeworks.Infrastructure.Cqrs.Queries;
 using Dotnet.Homeworks.Shared.Dto;
 using MediatR;
 
 namespace Dotnet.Homeworks.Features.Products.Queries.GetProducts;
 
-internal sealed class GetProductsQueryHandler : IQueryHandler<GetProductsQuery, IEnumerable<Product>>
+internal sealed class GetProductsQueryHandler : IQueryHandler<GetProductsQuery, GetProductsDto>
 {
     private readonly IProductRepository _productRepository;
 
@@ -16,7 +15,7 @@ internal sealed class GetProductsQueryHandler : IQueryHandler<GetProductsQuery, 
         _productRepository = productRepository;
     }
 
-    async Task<Result<IEnumerable<Product>>> IRequestHandler<GetProductsQuery, Result<IEnumerable<Product>>>.Handle(GetProductsQuery request, CancellationToken cancellationToken)
+    async Task<Result<GetProductsDto>> IRequestHandler<GetProductsQuery, Result<GetProductsDto>>.Handle(GetProductsQuery request, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
@@ -24,6 +23,8 @@ internal sealed class GetProductsQueryHandler : IQueryHandler<GetProductsQuery, 
 
         cancellationToken.ThrowIfCancellationRequested();
 
-        return new Result<IEnumerable<Product>>(products, true);
+        return new Result<GetProductsDto>(
+            new GetProductsDto(products.Select(x => new GetProductDto(x.Id, x.Name))),
+            true);
     }
 }

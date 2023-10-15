@@ -7,7 +7,7 @@ using MediatR;
 
 namespace Dotnet.Homeworks.Features.Products.Commands.InsertProduct;
 
-internal sealed class InsertProductCommandHandler : ICommandHandler<InsertProductCommand, Guid>
+internal sealed class InsertProductCommandHandler : ICommandHandler<InsertProductCommand, InsertProductDto>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IProductRepository _productRepository;
@@ -20,7 +20,7 @@ internal sealed class InsertProductCommandHandler : ICommandHandler<InsertProduc
     }
 
 
-    async Task<Result<Guid>> IRequestHandler<InsertProductCommand, Result<Guid>>.Handle(InsertProductCommand request, CancellationToken cancellationToken)
+    async Task<Result<InsertProductDto>> IRequestHandler<InsertProductCommand, Result<InsertProductDto>>.Handle(InsertProductCommand request, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
@@ -31,14 +31,14 @@ internal sealed class InsertProductCommandHandler : ICommandHandler<InsertProduc
 
         try
         {
-            var productId = await _productRepository.InsertProductAsync(newProduct, cancellationToken).ConfigureAwait(false);
-            await _unitOfWork.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            var productId = await _productRepository.InsertProductAsync(newProduct, cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-            return new Result<Guid>(productId, true);
+            return new Result<InsertProductDto>(new InsertProductDto(productId), true);
         }
         catch (Exception ex)
         {
-            return new Result<Guid>(default, false, ex.Message);
+            return new Result<InsertProductDto>(default, false, ex.Message);
         }
         finally 
         {

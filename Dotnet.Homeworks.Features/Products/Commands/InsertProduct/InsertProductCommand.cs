@@ -3,7 +3,7 @@ using Dotnet.Homeworks.Shared.Dto;
 
 namespace Dotnet.Homeworks.Features.Products.Commands.InsertProduct;
 
-public class InsertProductCommand : ICommand<Guid>
+public class InsertProductCommand : ICommand<InsertProductDto>
 {
     public string Name { get; init; }
 

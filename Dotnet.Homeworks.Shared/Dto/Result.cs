@@ -15,7 +15,7 @@ public class Result
 
     public static bool operator true(Result result) => result.IsSuccess;
 
-    public static bool operator false(Result result) =>result.IsFailure;
+    public static bool operator false(Result result) => result.IsFailure;
 }
 
 public class Result<TValue> : Result
