@@ -1,5 +1,8 @@
+using Dotnet.Homeworks.Domain.Entities;
+using Dotnet.Homeworks.Infrastructure.Cqrs.Queries;
+
 namespace Dotnet.Homeworks.Features.Products.Queries.GetProducts;
 
-public class GetProductsQuery //TODO: Query returns GetProductsDto. Inherit certain interface 
+public class GetProductsQuery : IQuery<IEnumerable<Product>>
 {
 }
