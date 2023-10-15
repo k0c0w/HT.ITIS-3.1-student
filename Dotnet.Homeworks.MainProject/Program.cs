@@ -1,13 +1,13 @@
-using Dotnet.Homeworks.Data.DatabaseContext;
 using Dotnet.Homeworks.MainProject.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.EntityFrameworkCore;
+using Dotnet.Homeworks.MainProject.ServicesExtensions;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("Default")));
+
+builder.Services.RegisterDataAccessServices(builder.Configuration);
+builder.Services.AddCommandsAndQueries();
 
 builder.Services.AddSingleton<IRegistrationService, RegistrationService>();
 builder.Services.AddSingleton<ICommunicationService, CommunicationService>();
