@@ -38,7 +38,7 @@ public class ProductManagementController : ControllerBase
         var insertProductCommandResult = await _mediator.Send(new InsertProductCommand(name), cancellationToken);
 
         return insertProductCommandResult
-            ? Created(Url.Action(nameof(GetProductsAsync), nameof(ProductManagementController)), insertProductCommandResult.Value)
+            ? Created(Url?.Action(nameof(GetProductsAsync), nameof(ProductManagementController)) ?? string.Empty, insertProductCommandResult.Value)
             : StatusCode(500);
     }
 
