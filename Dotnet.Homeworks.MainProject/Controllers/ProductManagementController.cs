@@ -1,4 +1,3 @@
-using Dotnet.Homeworks.Domain.Exceptions;
 using Dotnet.Homeworks.Features.Products.Commands.DeleteProduct;
 using Dotnet.Homeworks.Features.Products.Commands.InsertProduct;
 using Dotnet.Homeworks.Features.Products.Commands.UpdateProduct;
@@ -23,9 +22,11 @@ public class ProductManagementController : ControllerBase
     [HttpGet("products")]
     public async Task<IActionResult> GetProductsAsync(CancellationToken cancellationToken)
     {
-        var products = await _cqrsSender.Send(GetProductsQuery, cancellationToken).ConfigureAwait(false);
+        var productsQueryResult = await _cqrsSender.Send(GetProductsQuery, cancellationToken).ConfigureAwait(false);
 
-        return new JsonResult(products);
+        return productsQueryResult
+            ? new JsonResult(productsQueryResult.Value)
+            : StatusCode(500);
     }
 
     [HttpPost("product")]
@@ -34,9 +35,11 @@ public class ProductManagementController : ControllerBase
         if (string.IsNullOrEmpty(name))
             return BadRequest(new { error = "Name can not be empty" });
 
-        var insertedProductId = await _cqrsSender.Send(new InsertProductCommand(name), cancellationToken).ConfigureAwait(false);
+        var insertProductCommandResult = await _cqrsSender.Send(new InsertProductCommand(name), cancellationToken).ConfigureAwait(false);
 
-        return Created(Url.RouteUrl(GetProductsAsync), insertedProductId);
+        return insertProductCommandResult
+            ? Created(Url.Action(nameof(GetProductsAsync), nameof(ProductManagementController)), insertProductCommandResult.Value)
+            : StatusCode(500);
     }
 
     [HttpDelete("product")]
@@ -45,16 +48,9 @@ public class ProductManagementController : ControllerBase
         if (guid == default)
             return BadRequest(new { error = "Wrong guid" });
 
-        try
-        {
-            await _cqrsSender.Send(new DeleteProductByGuidCommand(guid), cancellationToken).ConfigureAwait(false);
-        }
-        catch (EntityNotFoundException)
-        {
-            return NotFound(guid);
-        }
+        var commandResult = await _cqrsSender.Send(new DeleteProductByGuidCommand(guid), cancellationToken).ConfigureAwait(false);
 
-        return NoContent();
+        return commandResult ? NoContent() : NotFound(guid);
     }
 
     [HttpPut("product")]
@@ -63,15 +59,8 @@ public class ProductManagementController : ControllerBase
         if (guid == default)
             return BadRequest(new { error = "Wrong guid" });
 
-        try
-        {
-            await _cqrsSender.Send(new UpdateProductCommand(guid, name), cancellationToken).ConfigureAwait(false);
-        }
-        catch (EntityNotFoundException)
-        {
-            return NotFound(guid);
-        }
+        var commandResult = await _cqrsSender.Send(new UpdateProductCommand(guid, name), cancellationToken).ConfigureAwait(false);
 
-        return NoContent();
+        return commandResult ? NoContent() : NotFound(guid);
     }
 }

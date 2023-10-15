@@ -1,7 +1,10 @@
 using Dotnet.Homeworks.Domain.Abstractions.Repositories;
 using Dotnet.Homeworks.Domain.Entities;
+using Dotnet.Homeworks.Domain.Exceptions;
 using Dotnet.Homeworks.Infrastructure.Cqrs.Commands;
 using Dotnet.Homeworks.Infrastructure.UnitOfWork;
+using Dotnet.Homeworks.Shared.Dto;
+using MediatR;
 
 namespace Dotnet.Homeworks.Features.Products.Commands.UpdateProduct;
 
@@ -16,24 +19,34 @@ internal sealed class UpdateProductCommandHandler : ICommandHandler<UpdateProduc
         _unitOfWork = unitOfWork;
     }
 
-    public async Task Handle(UpdateProductCommand request, CancellationToken cancellationToken)
+    async Task<Result> IRequestHandler<UpdateProductCommand, Result>.Handle(UpdateProductCommand request, CancellationToken cancellationToken)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         var updatedEntity = new Product()
         {
             Id = request.Guid,
             Name = request.Name
         };
 
-        await _productRepository.UpdateProductAsync(updatedEntity, cancellationToken)
-            .ContinueWith((completedTask) =>
-            {
-               if (!(completedTask.IsFaulted || cancellationToken.IsCancellationRequested))
-               {
-                    return _unitOfWork.SaveChangesAsync(cancellationToken);
-               }
+        try
+        {
+            await _productRepository.UpdateProductAsync(updatedEntity, cancellationToken).ConfigureAwait(false);
+            await _unitOfWork.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-               return Task.CompletedTask;
-            })
-            .ConfigureAwait(false);
+            return new Result(true);
+        }
+        catch(EntityNotFoundException ex)
+        {
+            return new Result(false, ex.Message);
+        }
+        catch
+        {
+            return new Result(false);
+        }
+        finally
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+        }
     }
 }

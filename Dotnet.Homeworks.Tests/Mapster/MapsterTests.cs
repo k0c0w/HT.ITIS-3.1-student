@@ -4,12 +4,12 @@ using Dotnet.Homeworks.Features.Orders.Mapping;
 using Dotnet.Homeworks.Features.Products.Mapping;
 using Dotnet.Homeworks.Features.UserManagement.Mapping;
 using Dotnet.Homeworks.Features.Users.Mapping;
-using Dotnet.Homeworks.MainProject.ServicesExtensions.Mapper;
 using Dotnet.Homeworks.Tests.RunLogic.Attributes;
 using Mapster;
 using Microsoft.Extensions.DependencyInjection;
 using NetArchTest.Rules;
-using ServiceCollectionExtensions = Dotnet.Homeworks.MainProject.ServicesExtensions.Mapper.ServiceCollectionExtensions;
+using Dotnet.Homeworks.MainProject.ServicesExtensions;
+using ServiceCollectionExtensions = Dotnet.Homeworks.MainProject.ServicesExtensions.ServiceCollectionExtensions;
 
 namespace Dotnet.Homeworks.Tests.Mapster;
 

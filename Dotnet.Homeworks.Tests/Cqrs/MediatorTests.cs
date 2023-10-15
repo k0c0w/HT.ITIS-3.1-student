@@ -30,7 +30,7 @@ public class MediatorTests
         await using var testEnvBuilder = new CqrsEnvironmentBuilder().WithMockedMediator();
         var env = testEnvBuilder.Build();
 
-        await env.ProductManagementController.GetProducts(CancellationToken.None);
+        await env.ProductManagementController.GetProductsAsync(CancellationToken.None);
 
         await env.MediatR.Received().Send(Arg.Any<IQuery<GetProductsDto>>(), Arg.Any<CancellationToken>());
     }

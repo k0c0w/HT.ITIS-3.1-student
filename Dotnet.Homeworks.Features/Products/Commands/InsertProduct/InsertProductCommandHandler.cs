@@ -2,6 +2,8 @@ using Dotnet.Homeworks.Domain.Abstractions.Repositories;
 using Dotnet.Homeworks.Domain.Entities;
 using Dotnet.Homeworks.Infrastructure.Cqrs.Commands;
 using Dotnet.Homeworks.Infrastructure.UnitOfWork;
+using Dotnet.Homeworks.Shared.Dto;
+using MediatR;
 
 namespace Dotnet.Homeworks.Features.Products.Commands.InsertProduct;
 
@@ -17,16 +19,30 @@ internal sealed class InsertProductCommandHandler : ICommandHandler<InsertProduc
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<Guid> Handle(InsertProductCommand request, CancellationToken cancellationToken)
+
+    async Task<Result<Guid>> IRequestHandler<InsertProductCommand, Result<Guid>>.Handle(InsertProductCommand request, CancellationToken cancellationToken)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         var newProduct = new Product
         {
             Name = request.Name,
         };
 
-        var productId = await _productRepository.InsertProductAsync(newProduct, cancellationToken).ConfigureAwait(false);
-        await _unitOfWork.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        try
+        {
+            var productId = await _productRepository.InsertProductAsync(newProduct, cancellationToken).ConfigureAwait(false);
+            await _unitOfWork.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-        return productId;
+            return new Result<Guid>(productId, true);
+        }
+        catch (Exception ex)
+        {
+            return new Result<Guid>(default, false, ex.Message);
+        }
+        finally 
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+        }
     }
 }
