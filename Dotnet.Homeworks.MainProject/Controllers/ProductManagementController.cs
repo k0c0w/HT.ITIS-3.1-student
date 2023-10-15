@@ -12,17 +12,17 @@ public class ProductManagementController : ControllerBase
 {
     private static readonly GetProductsQuery GetProductsQuery = new GetProductsQuery();
 
-    private readonly ISender _cqrsSender;
+    private readonly IMediator _mediator;
 
-    public ProductManagementController(ISender cqrs)
+    public ProductManagementController(IMediator mediator)
     {
-        _cqrsSender = cqrs;
+        _mediator = mediator;
     }
 
     [HttpGet("products")]
     public async Task<IActionResult> GetProductsAsync(CancellationToken cancellationToken)
     {
-        var productsQueryResult = await _cqrsSender.Send(GetProductsQuery, cancellationToken).ConfigureAwait(false);
+        var productsQueryResult = await _mediator.Send(GetProductsQuery, cancellationToken);
 
         return productsQueryResult
             ? new JsonResult(productsQueryResult.Value)
@@ -35,7 +35,7 @@ public class ProductManagementController : ControllerBase
         if (string.IsNullOrEmpty(name))
             return BadRequest(new { error = "Name can not be empty" });
 
-        var insertProductCommandResult = await _cqrsSender.Send(new InsertProductCommand(name), cancellationToken).ConfigureAwait(false);
+        var insertProductCommandResult = await _mediator.Send(new InsertProductCommand(name), cancellationToken);
 
         return insertProductCommandResult
             ? Created(Url.Action(nameof(GetProductsAsync), nameof(ProductManagementController)), insertProductCommandResult.Value)
@@ -48,7 +48,7 @@ public class ProductManagementController : ControllerBase
         if (guid == default)
             return BadRequest(new { error = "Wrong guid" });
 
-        var commandResult = await _cqrsSender.Send(new DeleteProductByGuidCommand(guid), cancellationToken).ConfigureAwait(false);
+        var commandResult = await _mediator.Send(new DeleteProductByGuidCommand(guid), cancellationToken);
 
         return commandResult ? NoContent() : NotFound(guid);
     }
@@ -59,7 +59,7 @@ public class ProductManagementController : ControllerBase
         if (guid == default)
             return BadRequest(new { error = "Wrong guid" });
 
-        var commandResult = await _cqrsSender.Send(new UpdateProductCommand(guid, name), cancellationToken).ConfigureAwait(false);
+        var commandResult = await _mediator.Send(new UpdateProductCommand(guid, name), cancellationToken);
 
         return commandResult ? NoContent() : NotFound(guid);
     }
