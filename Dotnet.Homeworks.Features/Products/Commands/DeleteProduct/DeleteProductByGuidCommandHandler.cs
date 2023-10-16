@@ -1,5 +1,4 @@
 using Dotnet.Homeworks.Domain.Abstractions.Repositories;
-using Dotnet.Homeworks.Domain.Exceptions;
 using Dotnet.Homeworks.Infrastructure.Cqrs.Commands;
 using Dotnet.Homeworks.Infrastructure.UnitOfWork;
 using Dotnet.Homeworks.Shared.Dto;
@@ -29,13 +28,9 @@ internal sealed class DeleteProductByGuidCommandHandler : ICommandHandler<Delete
 
             return new Result(true);
         }
-        catch (EntityNotFoundException ex)
+        catch (Exception ex)
         {
-            return new Result(false, error: ex.Message);
-        }
-        catch
-        {
-            return new Result(false);
+            return new Result(false, ex.Message);
         }
         finally
         {
