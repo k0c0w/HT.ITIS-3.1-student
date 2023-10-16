@@ -1,4 +1,7 @@
+using Dotnet.Homeworks.Data.DatabaseContext;
+using Dotnet.Homeworks.MainProject.Configuration;
 using Dotnet.Homeworks.MainProject.Services;
+using Dotnet.Homeworks.MainProject.ServicesExtensions.Masstransit;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using Dotnet.Homeworks.MainProject.ServicesExtensions.DataAccess;
