@@ -8,8 +8,8 @@ using Dotnet.Homeworks.Tests.RunLogic.Attributes;
 using Mapster;
 using Microsoft.Extensions.DependencyInjection;
 using NetArchTest.Rules;
-using Dotnet.Homeworks.MainProject.ServicesExtensions;
-using ServiceCollectionExtensions = Dotnet.Homeworks.MainProject.ServicesExtensions.ServiceCollectionExtensions;
+using Dotnet.Homeworks.MainProject.ServicesExtensions.Mapper;
+using ServiceCollectionExtensions = Dotnet.Homeworks.MainProject.ServicesExtensions.Mapper.ServiceCollectionExtensions;
 
 namespace Dotnet.Homeworks.Tests.Mapster;
 

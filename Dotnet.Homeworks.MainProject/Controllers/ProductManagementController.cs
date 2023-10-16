@@ -26,7 +26,7 @@ public class ProductManagementController : ControllerBase
 
         return productsQueryResult
             ? new JsonResult(productsQueryResult.Value)
-            : StatusCode(500);
+            : BadRequest();
     }
 
     [HttpPost("product")]
@@ -39,7 +39,7 @@ public class ProductManagementController : ControllerBase
 
         return insertProductCommandResult
             ? Created(Url?.Action(nameof(GetProductsAsync), nameof(ProductManagementController)) ?? string.Empty, insertProductCommandResult.Value)
-            : StatusCode(500);
+            : BadRequest("Model can not be inserted");
     }
 
     [HttpDelete("product")]

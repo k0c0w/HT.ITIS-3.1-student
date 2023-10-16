@@ -1,7 +1,7 @@
 using Dotnet.Homeworks.MainProject.Configuration;
 using MassTransit;
 
-namespace Dotnet.Homeworks.MainProject.ServicesExtensions;
+namespace Dotnet.Homeworks.MainProject.ServicesExtensions.Masstransit;
 
 public static partial class ServiceCollectionExtensions
 {

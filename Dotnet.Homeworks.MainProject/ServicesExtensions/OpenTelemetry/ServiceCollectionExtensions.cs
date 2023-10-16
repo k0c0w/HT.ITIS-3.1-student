@@ -1,6 +1,6 @@
 using Dotnet.Homeworks.MainProject.Configuration;
 
-namespace Dotnet.Homeworks.MainProject.ServicesExtensions;
+namespace Dotnet.Homeworks.MainProject.ServicesExtensions.OpenTelemetry;
 
 public static partial class ServiceCollectionExtensions
 {

@@ -1,6 +1,6 @@
 using System.Reflection;
 
-namespace Dotnet.Homeworks.MainProject.ServicesExtensions;
+namespace Dotnet.Homeworks.MainProject.ServicesExtensions.Mapper;
 
 public static partial class ServiceCollectionExtensions
 {

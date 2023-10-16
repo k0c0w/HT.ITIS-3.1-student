@@ -1,6 +1,6 @@
 using Dotnet.Homeworks.Infrastructure.Cqrs.Commands;
 
-namespace Dotnet.Homeworks.MainProject.ServicesExtensions;
+namespace Dotnet.Homeworks.MainProject.ServicesExtensions.CQRS;
 
 public static partial class ServiceCollectionExtensions
 {

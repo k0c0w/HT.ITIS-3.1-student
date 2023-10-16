@@ -1,5 +1,5 @@
 using System.Reflection;
-using Dotnet.Homeworks.MainProject.ServicesExtensions;
+using Dotnet.Homeworks.MainProject.ServicesExtensions.Mapper;
 using Dotnet.Homeworks.Tests.RunLogic.Attributes;
 using Microsoft.Extensions.DependencyInjection;
 
