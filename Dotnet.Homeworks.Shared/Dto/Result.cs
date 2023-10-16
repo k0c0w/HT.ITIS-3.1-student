@@ -12,6 +12,10 @@ public class Result
         if (error is not null) 
             Error = error;
     }
+
+    public static bool operator true(Result result) => result.IsSuccess;
+
+    public static bool operator false(Result result) => result.IsFailure;
 }
 
 public class Result<TValue> : Result

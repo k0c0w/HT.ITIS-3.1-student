@@ -1,8 +1,8 @@
 using Dotnet.Homeworks.MainProject.Configuration;
 
-namespace Dotnet.Homeworks.MainProject.ServicesExtensions.OpenTelemetry;
+namespace Dotnet.Homeworks.MainProject.ServicesExtensions;
 
-public static class ServiceCollectionExtensions
+public static partial class ServiceCollectionExtensions
 {
     public static IServiceCollection AddOpenTelemetry(this IServiceCollection services,
         OpenTelemetryConfig openTelemetryConfiguration)

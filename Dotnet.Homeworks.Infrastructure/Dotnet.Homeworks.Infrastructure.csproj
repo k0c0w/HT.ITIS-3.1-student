@@ -9,12 +9,17 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Dotnet.Homeworks.DataAccess\Dotnet.Homeworks.DataAccess.csproj" />
       <ProjectReference Include="..\Dotnet.Homeworks.Data\Dotnet.Homeworks.Data.csproj" />
       <ProjectReference Include="..\Dotnet.Homeworks.Shared\Dotnet.Homeworks.Shared.csproj" />
     </ItemGroup>
 
     <ItemGroup>
       <Folder Include="Validation\Behaviors\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="MediatR" Version="12.1.1" />
     </ItemGroup>
 
 </Project>

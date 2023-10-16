@@ -1,8 +1,8 @@
 using System.Reflection;
 
-namespace Dotnet.Homeworks.MainProject.ServicesExtensions.Mapper;
+namespace Dotnet.Homeworks.MainProject.ServicesExtensions;
 
-public static class ServiceCollectionExtensions
+public static partial class ServiceCollectionExtensions
 {
     public static IServiceCollection AddMappers(this IServiceCollection services, Assembly mapperConfigsAssembly)
     {

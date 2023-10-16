@@ -1,9 +1,9 @@
 using Dotnet.Homeworks.MainProject.Configuration;
 using MassTransit;
 
-namespace Dotnet.Homeworks.MainProject.ServicesExtensions.Masstransit;
+namespace Dotnet.Homeworks.MainProject.ServicesExtensions;
 
-public static class ServiceCollectionExtensions
+public static partial class ServiceCollectionExtensions
 {
     public static IServiceCollection AddMasstransitRabbitMq(this IServiceCollection services,
         RabbitMqConfig rabbitConfiguration)
