@@ -1,8 +1,11 @@
 using Dotnet.Homeworks.MainProject.Services;
+using Dotnet.Homeworks.MainProject.ServicesExtensions.Masstransit;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Dotnet.Homeworks.MainProject.ServicesExtensions;
 
 var builder = WebApplication.CreateBuilder(args);
+var rabbitMQconfig = builder.Configuration.GetSection("RabbitMQ").Get<RabbitMqConfig>()!;
+
 builder.Services.AddControllers();
 
 
@@ -14,6 +17,10 @@ builder.Services.AddSingleton<ICommunicationService, CommunicationService>();
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie();
+builder.Services.AddAuthorization();
+
+builder.Services.AddMasstransitRabbitMq(rabbitMQconfig);
+
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -25,7 +32,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.MapGet("/", () => "Hello World!");
+app.UseRouting();
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllers();
 

@@ -20,15 +20,19 @@ public class MailingService : IMailingService
     public async Task<Result> SendEmailAsync(EmailMessage emailDto)
     {
         using var message = new MimeMessage();
-        message.From.Add(new MailboxAddress("Testing mailing api", _emailConfig.Email));
+        message.From.Add(new MailboxAddress(_emailConfig.ServiceName, _emailConfig.Email));
         message.To.Add(new MailboxAddress(emailDto.Email, emailDto.Email));
         message.Subject = emailDto.Subject ?? "";
         var bodyBuilder = new BodyBuilder
         {
-            TextBody = $"Your message: {emailDto.Content}"
+            TextBody = emailDto.Content
         };
         message.Body = bodyBuilder.ToMessageBody();
-        using var client = new SmtpClient();
+        using var client = new SmtpClient()
+        {
+            CheckCertificateRevocation = true
+        };
+
         try
         {
             await client.ConnectAsync(_emailConfig.Host, _emailConfig.Port, SecureSocketOptions.StartTls);

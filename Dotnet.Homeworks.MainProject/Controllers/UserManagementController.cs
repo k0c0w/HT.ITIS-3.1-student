@@ -1,5 +1,6 @@
 ﻿using Dotnet.Homeworks.Domain.Entities;
 using Dotnet.Homeworks.MainProject.Dto;
+using Dotnet.Homeworks.MainProject.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Dotnet.Homeworks.MainProject.Controllers;
@@ -7,38 +8,50 @@ namespace Dotnet.Homeworks.MainProject.Controllers;
 [ApiController]
 public class UserManagementController : ControllerBase
 {
-    [HttpPost("user")]
-    public Task<IActionResult> CreateUser(RegisterUserDto userDto, CancellationToken cancellationToken)
+    private readonly IRegistrationService _registrationService;
+
+    public UserManagementController(IRegistrationService registrationService)
     {
-        throw new NotImplementedException();
+        _registrationService = registrationService;
+    }
+
+    [HttpPost("user")]
+    public async Task<IActionResult> CreateUserAsync(RegisterUserDto userDto, CancellationToken cancellationToken)
+    {
+        if (userDto == null || string.IsNullOrEmpty(userDto.Name))
+            return BadRequest();
+
+        await _registrationService.RegisterAsync(userDto);
+
+        return Ok();
     }
 
     [HttpGet("profile/{guid}")]
-    public Task<IActionResult> GetProfile(Guid guid, CancellationToken cancellationToken) 
+    public Task<IActionResult> GetProfileAsync(Guid guid, CancellationToken cancellationToken) 
     {
         throw new NotImplementedException();
     }
 
     [HttpGet("users")]
-    public Task<IActionResult> GetAllUsers(CancellationToken cancellationToken)
+    public Task<IActionResult> GetAllUsersAsync(CancellationToken cancellationToken)
     {
         throw new NotImplementedException();
     }
 
     [HttpDelete("profile/{guid:guid}")]
-    public Task<IActionResult> DeleteProfile(Guid guid, CancellationToken cancellationToken)
+    public Task<IActionResult> DeleteProfileAsync(Guid guid, CancellationToken cancellationToken)
     {
         throw new NotImplementedException();
     }
 
     [HttpPut("profile")]
-    public Task<IActionResult> UpdateProfile(User user, CancellationToken cancellationToken)
+    public Task<IActionResult> UpdateProfileAsync(User user, CancellationToken cancellationToken)
     {
         throw new NotImplementedException();
     }
 
     [HttpDelete("user/{guid:guid}")]
-    public Task<IActionResult> DeleteUser(Guid guid, CancellationToken cancellationToken)
+    public Task<IActionResult> DeleteUserAsync(Guid guid, CancellationToken cancellationToken)
     {
         throw new NotImplementedException();
     }
