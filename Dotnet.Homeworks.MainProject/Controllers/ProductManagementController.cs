@@ -24,7 +24,7 @@ public class ProductManagementController : ControllerBase
     {
         var productsQueryResult = await _mediator.Send(GetProductsQuery, cancellationToken);
 
-        return productsQueryResult
+        return productsQueryResult.IsSuccess
             ? new JsonResult(productsQueryResult.Value)
             : BadRequest();
     }
@@ -37,7 +37,7 @@ public class ProductManagementController : ControllerBase
 
         var insertProductCommandResult = await _mediator.Send(new InsertProductCommand(name), cancellationToken);
 
-        return insertProductCommandResult
+        return insertProductCommandResult.IsSuccess
             ? Created(Url?.Action(nameof(GetProductsAsync), nameof(ProductManagementController)) ?? string.Empty, insertProductCommandResult.Value)
             : BadRequest("Model can not be inserted");
     }
@@ -50,7 +50,7 @@ public class ProductManagementController : ControllerBase
 
         var commandResult = await _mediator.Send(new DeleteProductByGuidCommand(guid), cancellationToken);
 
-        return commandResult ? NoContent() : NotFound(guid);
+        return commandResult.IsSuccess ? NoContent() : NotFound(guid);
     }
 
     [HttpPut("product")]
@@ -61,6 +61,6 @@ public class ProductManagementController : ControllerBase
 
         var commandResult = await _mediator.Send(new UpdateProductCommand(guid, name), cancellationToken);
 
-        return commandResult ? NoContent() : NotFound(guid);
+        return commandResult.IsSuccess ? NoContent() : NotFound(guid);
     }
 }
