@@ -2,12 +2,12 @@
 
 namespace Dotnet.Homeworks.Mediator;
 
-public class Mediator : IMediator
+internal class Mediator : IMediator
 {
     private readonly IServiceProvider _serviceProvider;
-    private readonly Dictionary<Type, Type> _requestToHandlerMap;
+    private readonly MediatorRequestToHandlerMap _requestToHandlerMap;
 
-    public Mediator(IServiceProvider serviceProvider, Dictionary<Type, Type> requestTypeToHandlerTypeMap)
+    public Mediator(IServiceProvider serviceProvider, MediatorRequestToHandlerMap requestTypeToHandlerTypeMap)
     {
         _serviceProvider = serviceProvider;
         _requestToHandlerMap = requestTypeToHandlerTypeMap;
