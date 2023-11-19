@@ -1,8 +1,8 @@
 using Dotnet.Homeworks.Domain.Abstractions.Repositories;
 using Dotnet.Homeworks.Infrastructure.Cqrs.Commands;
 using Dotnet.Homeworks.Infrastructure.UnitOfWork;
+using Dotnet.Homeworks.Mediator;
 using Dotnet.Homeworks.Shared.Dto;
-using MediatR;
 
 namespace Dotnet.Homeworks.Features.Products.Commands.DeleteProduct;
 
@@ -11,9 +11,9 @@ internal sealed class DeleteProductByGuidCommandHandler : ICommandHandler<Delete
     private readonly IUnitOfWork _unitOfWork;
     private readonly IProductRepository _productRepository;
 
-    public DeleteProductByGuidCommandHandler(IUnitOfWork unitOfWork)
+    public DeleteProductByGuidCommandHandler(IUnitOfWork unitOfWork, IProductRepository productRepository)
     {
-        _productRepository = unitOfWork.ProductRepository;
+        _productRepository = productRepository;
         _unitOfWork = unitOfWork;
     }
 

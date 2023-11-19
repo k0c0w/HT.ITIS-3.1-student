@@ -2,8 +2,8 @@ using Dotnet.Homeworks.Domain.Abstractions.Repositories;
 using Dotnet.Homeworks.Domain.Entities;
 using Dotnet.Homeworks.Infrastructure.Cqrs.Commands;
 using Dotnet.Homeworks.Infrastructure.UnitOfWork;
+using Dotnet.Homeworks.Mediator;
 using Dotnet.Homeworks.Shared.Dto;
-using MediatR;
 
 namespace Dotnet.Homeworks.Features.Products.Commands.InsertProduct;
 
@@ -13,9 +13,9 @@ internal sealed class InsertProductCommandHandler : ICommandHandler<InsertProduc
     private readonly IProductRepository _productRepository;
 
 
-    public InsertProductCommandHandler(IUnitOfWork unitOfWork)
+    public InsertProductCommandHandler(IUnitOfWork unitOfWork, IProductRepository productRepository)
     {
-        _productRepository = unitOfWork.ProductRepository;
+        _productRepository = productRepository;
         _unitOfWork = unitOfWork;
     }
 

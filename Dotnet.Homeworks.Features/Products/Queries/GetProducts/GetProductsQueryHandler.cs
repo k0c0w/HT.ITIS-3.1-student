@@ -1,7 +1,7 @@
 using Dotnet.Homeworks.Domain.Abstractions.Repositories;
 using Dotnet.Homeworks.Infrastructure.Cqrs.Queries;
+using Dotnet.Homeworks.Mediator;
 using Dotnet.Homeworks.Shared.Dto;
-using MediatR;
 
 namespace Dotnet.Homeworks.Features.Products.Queries.GetProducts;
 
@@ -19,7 +19,7 @@ internal sealed class GetProductsQueryHandler : IQueryHandler<GetProductsQuery, 
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        var products = await _productRepository.GetAllProductsAsync(cancellationToken).ConfigureAwait(false);
+        var products = await _productRepository.GetAllProductsAsync(cancellationToken);
 
         cancellationToken.ThrowIfCancellationRequested();
 

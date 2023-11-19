@@ -3,8 +3,8 @@ using Dotnet.Homeworks.Domain.Entities;
 using Dotnet.Homeworks.Domain.Exceptions;
 using Dotnet.Homeworks.Infrastructure.Cqrs.Commands;
 using Dotnet.Homeworks.Infrastructure.UnitOfWork;
+using Dotnet.Homeworks.Mediator;
 using Dotnet.Homeworks.Shared.Dto;
-using MediatR;
 
 namespace Dotnet.Homeworks.Features.Products.Commands.UpdateProduct;
 
@@ -13,9 +13,9 @@ internal sealed class UpdateProductCommandHandler : ICommandHandler<UpdateProduc
     private readonly IUnitOfWork _unitOfWork;
     private readonly IProductRepository _productRepository;
 
-    public UpdateProductCommandHandler(IUnitOfWork unitOfWork)
+    public UpdateProductCommandHandler(IUnitOfWork unitOfWork, IProductRepository productRepository)
     {
-        _productRepository = unitOfWork.ProductRepository;
+        _productRepository = productRepository;
         _unitOfWork = unitOfWork;
     }
 
@@ -31,8 +31,8 @@ internal sealed class UpdateProductCommandHandler : ICommandHandler<UpdateProduc
 
         try
         {
-            await _productRepository.UpdateProductAsync(updatedEntity, cancellationToken).ConfigureAwait(false);
-            await _unitOfWork.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            await _productRepository.UpdateProductAsync(updatedEntity, cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return new Result(true);
         }

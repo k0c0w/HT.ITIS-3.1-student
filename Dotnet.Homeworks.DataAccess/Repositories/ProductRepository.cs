@@ -19,8 +19,7 @@ public class ProductRepository : IProductRepository
     {
         return await _ctx
             .Products
-            .ToListAsync(cancellationToken)
-            .ConfigureAwait(false);
+            .ToListAsync(cancellationToken);
     }
 
     public Task<Product?> GetByIdAsync(Guid id, CancellationToken cancellationToken) => _ctx.Products.FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
@@ -30,7 +29,7 @@ public class ProductRepository : IProductRepository
         if (cancellationToken.IsCancellationRequested)
             return;
 
-        var entityToRemove = await GetByIdAsync(id, cancellationToken).ConfigureAwait(false);
+        var entityToRemove = await GetByIdAsync(id, cancellationToken);
 
         if (cancellationToken.IsCancellationRequested)
             return;
@@ -49,7 +48,7 @@ public class ProductRepository : IProductRepository
         if (cancellationToken.IsCancellationRequested)
             return;
 
-        var previousEntry = await GetByIdAsync(product.Id, cancellationToken).ConfigureAwait(false);
+        var previousEntry = await GetByIdAsync(product.Id, cancellationToken);
         if (previousEntry == null)
             throw new EntityNotFoundException(product.Id, typeof(Product));
 
@@ -61,7 +60,7 @@ public class ProductRepository : IProductRepository
 
     public async Task<Guid> InsertProductAsync(Product product, CancellationToken cancellationToken)
     {
-        await _ctx.Products.AddAsync(product, cancellationToken).ConfigureAwait(false);
+        await _ctx.Products.AddAsync(product, cancellationToken);
 
         if (cancellationToken.IsCancellationRequested)
             StopTrackingEntryById(product.Id);
