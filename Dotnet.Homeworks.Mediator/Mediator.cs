@@ -1,4 +1,6 @@
-﻿namespace Dotnet.Homeworks.Mediator;
+﻿using Microsoft.Extensions.DependencyInjection;
+
+namespace Dotnet.Homeworks.Mediator;
 
 public class Mediator : IMediator
 {
@@ -25,14 +27,28 @@ public class Mediator : IMediator
         var handleRunnerType = typeof(RequestParamsContainer<,>).MakeGenericType(requestType, typeof(TResponse));
         var handleRunner = Activator.CreateInstance(handleRunnerType);
 
-        return handleRunnerType.GetMethod("Handle").Invoke(handleRunner, new object[] { request, handler, cancellationToken }) as Task<TResponse>;
+        return handleRunnerType.GetMethod("Handle").Invoke(handleRunner, new object[] { request, handler, _serviceProvider, cancellationToken }) as Task<TResponse>;
     }
     
     private class RequestParamsContainer<TRequest, TResponse> where TRequest : IRequest<TResponse>
     {
-        public Task<TResponse> Handle(TRequest request, object handler, CancellationToken cancellationToken)
+        public Task<TResponse> Handle(TRequest request, object handler, IServiceProvider serviceProvider, CancellationToken cancellationToken)
         {
-            return ((IRequestHandler<TRequest, TResponse>)handler).Handle(request, cancellationToken);
+            var pipeLines = serviceProvider.GetServices<IPipelineBehavior<TRequest, TResponse>>();
+            var firstHandler = pipeLines.FirstOrDefault();
+
+            if (firstHandler == null)
+                return ((IRequestHandler<TRequest, TResponse>)handler).Handle(request, cancellationToken);
+
+            RequestHandlerDelegate<TResponse> result = () => ((IRequestHandler<TRequest, TResponse>)handler)
+            .Handle(request, cancellationToken);
+
+            foreach (var next in pipeLines)
+            {
+                result = () => next.Handle(request, result, cancellationToken);
+            }
+
+            return result();
         }
     }
 
@@ -55,6 +71,12 @@ public class Mediator : IMediator
     {
         ThrowArgumentNullExceptionIfNull(request, nameof(request));
         return Send(request, cancellationToken);
+    }
+
+    // Fallback
+    public Task Send<TResponse>(object request, CancellationToken cancellationToken = default)
+    {
+        return null!;
     }
 
     private void ThrowArgumentNullExceptionIfNull<T>(T argument, string argumentName)
