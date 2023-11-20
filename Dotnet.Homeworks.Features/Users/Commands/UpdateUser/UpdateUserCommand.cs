@@ -15,5 +15,4 @@ public class UpdateUserCommand : IClientRequest, ICommand
         Guid = user.Id;
         User = user;
     }
-
 }
