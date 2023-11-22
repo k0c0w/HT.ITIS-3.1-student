@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using Dotnet.Homeworks.MainProject.ServicesExtensions.DataAccess;
 using Dotnet.Homeworks.Mediator.DependencyInjectionExtensions;
+using Dotnet.Homeworks.Features.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);
 var rabbitMQconfig = builder.Configuration.GetSection("RabbitMQ").Get<RabbitMqConfig>()!;
@@ -15,8 +16,7 @@ builder.Services.AddControllers();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("Default")));
 
-builder.Services.RegisterDataAccessServices(builder.Configuration);
-builder.Services.AddMediator(Dotnet.Homeworks.Features.Helpers.AssemblyReference.Assembly);
+builder.Services.AddFeaturesDependencies();
 
 builder.Services.AddSingleton<IRegistrationService, RegistrationService>();
 builder.Services.AddSingleton<ICommunicationService, CommunicationService>();
