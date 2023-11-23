@@ -52,7 +52,6 @@ internal class Mediator : IMediator
         }
     }
 
-
     public Task Send<TRequest>(TRequest request, CancellationToken cancellationToken = default) where TRequest : IRequest
     {
         ThrowArgumentNullExceptionIfNull(request, nameof(request));

@@ -9,7 +9,7 @@ public static class ServiceCollectionExtensions
         Assembly assembly
     )
     {
-        throw new NotImplementedException();
+        AddPermissionChecks(serviceCollection, new Assembly[] { assembly });
     }
     
     public static void AddPermissionChecks(
@@ -17,6 +17,30 @@ public static class ServiceCollectionExtensions
         Assembly[] assemblies
     )
     {
-        throw new NotImplementedException();
+        var permissionCheckType = typeof(PermissionCheck<>);
+        var iPermissionCheckType = typeof(IPermissionCheck<>);
+
+        foreach (var assembly in assemblies)
+        {
+            (Type InterfaceImplementerType, Type RequestType)[] values = assembly.GetTypes()
+                .Select(x =>
+                (
+                    ImplemeterType: x,
+                    IPermissionCheckType: x.GetInterfaces()
+                        .FirstOrDefault(i => !(i.IsGenericTypeDefinition || i.ContainsGenericParameters) && i == iPermissionCheckType)
+                ))
+                .Where(x => x.IPermissionCheckType is not null)
+                .Select(x => 
+                (
+                    InterfaceImplementerType: x.ImplemeterType, 
+                    RequestType: x.IPermissionCheckType!.GetGenericArguments().First()
+                ))
+                .ToArray();
+
+            foreach ((Type InterfaceImplementerType, Type RequestType) in values)
+            {
+                serviceCollection.AddTransient(iPermissionCheckType.MakeGenericType(RequestType), InterfaceImplementerType);
+            }
+        }
     }
 }
