@@ -19,4 +19,8 @@
       <Folder Include="Validation\Behaviors\" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="FluentValidation" Version="11.8.0" />
+    </ItemGroup>
+
 </Project>
