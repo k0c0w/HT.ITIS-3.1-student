@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using Microsoft.Extensions.DependencyInjection.Extensions;
+using System.Reflection;
 
 namespace Dotnet.Homeworks.Infrastructure.Validation.PermissionChecker.DependencyInjectionExtensions;
 
@@ -17,30 +18,36 @@ public static class ServiceCollectionExtensions
         Assembly[] assemblies
     )
     {
-        var permissionCheckType = typeof(PermissionCheck<>);
         var iPermissionCheckType = typeof(IPermissionCheck<>);
 
-        foreach (var assembly in assemblies)
-        {
-            (Type InterfaceImplementerType, Type RequestType)[] values = assembly.GetTypes()
-                .Select(x =>
-                (
-                    ImplemeterType: x,
-                    IPermissionCheckType: x.GetInterfaces()
-                        .FirstOrDefault(i => !(i.IsGenericTypeDefinition || i.ContainsGenericParameters) && i == iPermissionCheckType)
-                ))
-                .Where(x => x.IPermissionCheckType is not null)
-                .Select(x => 
-                (
-                    InterfaceImplementerType: x.ImplemeterType, 
-                    RequestType: x.IPermissionCheckType!.GetGenericArguments().First()
-                ))
-                .ToArray();
-
-            foreach ((Type InterfaceImplementerType, Type RequestType) in values)
+        var implementationsWithInterfaces = assemblies
+            .SelectMany(assembly => assembly.GetTypes())
+            .Where(IsConcrete)
+            .Select(type => new
             {
-                serviceCollection.AddTransient(iPermissionCheckType.MakeGenericType(RequestType), InterfaceImplementerType);
-            }
+                ImplementationType = type,
+                ConcretePermissionCheckInterfaces = type.GetInterfaces()
+                    .Where(i => i.IsGenericType && i.GetGenericTypeDefinition() == iPermissionCheckType)
+                    .Where(i => !i.IsOpenGeneric())
+                    .ToArray()
+            })
+            .Where(info => info.ConcretePermissionCheckInterfaces.Any());
+
+        foreach (var info in implementationsWithInterfaces)
+        {
+            var implementation = info.ImplementationType;
+            foreach (var permissionCheckInterfaceType in info.ConcretePermissionCheckInterfaces)
+                serviceCollection.TryAddTransient(permissionCheckInterfaceType, implementation);
         }
+    }
+
+    private static bool IsConcrete(this Type type)
+    {
+        return !type.IsAbstract && !type.IsInterface;
+    }
+
+    private static bool IsOpenGeneric(this Type type)
+    {
+        return type.IsGenericTypeDefinition || type.ContainsGenericParameters;
     }
 }
