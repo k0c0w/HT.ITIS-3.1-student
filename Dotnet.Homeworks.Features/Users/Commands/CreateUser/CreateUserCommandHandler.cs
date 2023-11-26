@@ -1,6 +1,7 @@
 ﻿using Dotnet.Homeworks.Domain.Abstractions.Repositories;
 using Dotnet.Homeworks.Domain.Entities;
 using Dotnet.Homeworks.Features.Decorators;
+using Dotnet.Homeworks.Features.Users.Commands.CreateUser.Services;
 using Dotnet.Homeworks.Infrastructure.Cqrs.Commands;
 using Dotnet.Homeworks.Infrastructure.UnitOfWork;
 using Dotnet.Homeworks.Infrastructure.Validation.PermissionChecker;
@@ -14,11 +15,13 @@ public class CreateUserCommandHandler : CqrsDecorator<CreateUserCommand, Result<
 {
     private readonly IUserRepository _userRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IRegistrationService _registrationService;
 
-    public CreateUserCommandHandler(IUserRepository userRepository, IUnitOfWork unitOfWork, IEnumerable<IValidator<CreateUserCommand>> validators, IPermissionCheck<IClientRequest> permissionCheck) : base(validators, permissionCheck)
+    public CreateUserCommandHandler(IRegistrationService registrationService, IUserRepository userRepository, IUnitOfWork unitOfWork, IEnumerable<IValidator<CreateUserCommand>> validators, IPermissionCheck<IClientRequest> permissionCheck) : base(validators, permissionCheck)
     {
         _userRepository = userRepository;
         _unitOfWork = unitOfWork;
+        _registrationService = registrationService;
     }
 
     public override async Task<Result<CreateUserDto>> Handle(CreateUserCommand request, CancellationToken cancellationToken)
@@ -42,6 +45,14 @@ public class CreateUserCommandHandler : CqrsDecorator<CreateUserCommand, Result<
 
             var guid = await _userRepository.InsertUserAsync(user, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
+            try
+            {
+                await _registrationService.RegisterAsync(new RegisterUserDto(user.Name, user.Email));
+            }
+            catch
+            {
+
+            }
 
             return new Result<CreateUserDto>(new CreateUserDto(guid), true);
         }

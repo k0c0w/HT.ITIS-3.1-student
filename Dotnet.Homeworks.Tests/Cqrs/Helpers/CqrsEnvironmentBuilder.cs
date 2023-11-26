@@ -2,6 +2,7 @@
 using Dotnet.Homeworks.Domain.Abstractions.Repositories;
 using Dotnet.Homeworks.Features.Products.Commands.InsertProduct;
 using Dotnet.Homeworks.Features.Products.Queries.GetProducts;
+using Dotnet.Homeworks.Features.Users.Commands.CreateUser.Services;
 using Dotnet.Homeworks.Infrastructure.Cqrs.Commands;
 using Dotnet.Homeworks.Infrastructure.Cqrs.Queries;
 using Dotnet.Homeworks.Infrastructure.UnitOfWork;
@@ -11,9 +12,12 @@ using Dotnet.Homeworks.Mediator.DependencyInjectionExtensions;
 using Dotnet.Homeworks.Shared.Dto;
 using Dotnet.Homeworks.Tests.Shared.RepositoriesMocks;
 using Dotnet.Homeworks.Tests.Shared.TestEnvironmentBuilder;
+using Dotnet.Homeworks.Shared.MessagingContracts.Email;
 using FluentValidation;
+using MassTransit;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Moq;
 using NSubstitute;
 
 namespace Dotnet.Homeworks.Tests.Cqrs.Helpers;
@@ -26,6 +30,7 @@ internal class CqrsEnvironmentBuilder : TestEnvironmentBuilder<CqrsEnvironment>
 
     private IUnitOfWork UnitOfWork { get; set; } = Substitute.For<IUnitOfWork>();
     private MediatR.IMediator MediatR { get; set; } = Substitute.For<MediatR.IMediator>();
+    private IBus Bus { get; set; } = Substitute.For<IBus>();
     private Mediator.IMediator CustomMediator { get; set; } = Substitute.For<Mediator.IMediator>();
     private ProductManagementController? ProductManagementController { get; set; }
 
@@ -54,9 +59,17 @@ internal class CqrsEnvironmentBuilder : TestEnvironmentBuilder<CqrsEnvironment>
             .AddSingleton<IUserRepository>(UserRepositoryMock)
             .AddSingleton(HttpContextAccessorMock)
             .AddSingleton(UnitOfWork);
-        if (IsCqrsComplete()) configureServices += s => s
-            .AddValidatorsFromAssembly(Features.Helpers.AssemblyReference.Assembly)
-            .AddPermissionChecks(Features.Helpers.AssemblyReference.Assembly);
+
+        if (IsCqrsComplete())
+        {
+            var mockedBus = new Mock<IBus>();
+            mockedBus.Setup(obj => obj.Publish<SendEmail>(It.IsAny<SendEmail>(), CancellationToken.None)).Returns(Task.CompletedTask);
+            configureServices += s => s
+                .AddSingleton<IRegistrationService, RegistrationService>()
+                .AddSingleton<ICommunicationService>(new CommunicationService(mockedBus.Object))
+                .AddValidatorsFromAssembly(Features.Helpers.AssemblyReference.Assembly)
+                .AddPermissionChecks(Features.Helpers.AssemblyReference.Assembly);
+        }
 
         configureServices = SetupMediator(configureServices);
 
@@ -72,7 +85,7 @@ internal class CqrsEnvironmentBuilder : TestEnvironmentBuilder<CqrsEnvironment>
         GetMockedMediatorFromServiceProvider();
 
         return new CqrsEnvironment(ProductManagementController,
-            UnitOfWork, MediatR, CustomMediator, UserRepositoryMock);
+            UnitOfWork, MediatR, CustomMediator, UserRepositoryMock, Bus);
     }
 
     public void SetupHttpContextClaims(List<Claim> claims)

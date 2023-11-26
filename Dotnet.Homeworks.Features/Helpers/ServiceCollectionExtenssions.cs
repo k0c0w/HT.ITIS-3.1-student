@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using FluentValidation;
 using Dotnet.Homeworks.Infrastructure.Validation.PermissionChecker.DependencyInjectionExtensions;
 using Dotnet.Homeworks.Mediator;
+using Dotnet.Homeworks.Features.Users.Commands.CreateUser.Services;
 
 namespace Dotnet.Homeworks.Features.Helpers;
 
@@ -24,5 +25,8 @@ public static class ServiceCollectionExtenssions
         
         services.AddValidatorsFromAssembly(AssemblyReference.Assembly, ServiceLifetime.Transient);
         services.AddPermissionChecks(AssemblyReference.Assembly);
+
+        services.AddSingleton<IRegistrationService, RegistrationService>();
+        services.AddSingleton<ICommunicationService, CommunicationService>();
     }
 }
