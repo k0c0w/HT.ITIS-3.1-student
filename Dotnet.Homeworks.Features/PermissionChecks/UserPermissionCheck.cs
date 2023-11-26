@@ -6,7 +6,7 @@ using System.Security.Claims;
 
 namespace Dotnet.Homeworks.Features.PermissionChecks;
 
-internal class UserPermissionCheck : PermissionCheck<IClientRequest>
+public class UserPermissionCheck : PermissionCheck<IClientRequest>
 {
     public UserPermissionCheck(IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor.HttpContext)
     {

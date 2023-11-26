@@ -8,7 +8,7 @@ namespace Dotnet.Homeworks.Features.PermissionChecks;
 
 internal class AdminPermissionCheck : PermissionCheck<IAdminRequest>
 {
-    private static string _adminRoleString = Roles.Admin.ToString();
+    private static readonly string _adminRoleString = Roles.Admin.ToString();
 
     public AdminPermissionCheck(IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor.HttpContext)
     {
@@ -21,5 +21,5 @@ internal class AdminPermissionCheck : PermissionCheck<IAdminRequest>
         return hasAdminRole ? TaskFromResult(_succedResult) : TaskFromResult(_deniedResult);
     }
 
-    private Task<IEnumerable<PermissionResult>> TaskFromResult(IEnumerable<PermissionResult> result) => Task.FromResult(result);
+    private static Task<IEnumerable<PermissionResult>> TaskFromResult(IEnumerable<PermissionResult> result) => Task.FromResult(result);
 }
