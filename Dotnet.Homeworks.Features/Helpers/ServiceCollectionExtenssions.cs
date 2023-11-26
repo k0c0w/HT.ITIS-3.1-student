@@ -6,6 +6,7 @@ using Dotnet.Homeworks.Mediator.DependencyInjectionExtensions;
 using Microsoft.Extensions.DependencyInjection;
 using FluentValidation;
 using Dotnet.Homeworks.Infrastructure.Validation.PermissionChecker.DependencyInjectionExtensions;
+using Dotnet.Homeworks.Mediator;
 
 namespace Dotnet.Homeworks.Features.Helpers;
 
@@ -18,7 +19,8 @@ public static class ServiceCollectionExtenssions
                 .AddScoped<IProductRepository, ProductRepository>();
 
         services.AddMediator(AssemblyReference.Assembly);
-        services.AddPipelineBehaviors(AssemblyReference.Assembly);
+        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(AdminPermissionBehavior<,>));
+        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
         
         services.AddValidatorsFromAssembly(AssemblyReference.Assembly, ServiceLifetime.Transient);
         services.AddPermissionChecks(AssemblyReference.Assembly);
