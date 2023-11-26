@@ -13,11 +13,22 @@ public static class ServiceCollectionExtensions
             .ToArray();
         var requestHandlersInfos = GetRequestHandlerImplementationInfos(scanningTypes);
 
-        RegisterIPipelineBehaviorImplementationTypes(services, scanningTypes);
         RegisterIRequestHandlersImplementationTypes(services, requestHandlersInfos);
 
         services.AddSingleton(CreateMapForMediator(requestHandlersInfos));
         services.AddSingleton<IMediator, Mediator>();
+
+        return services;
+    }
+
+    public static IServiceCollection AddPipelineBehaviors(this IServiceCollection services, params Assembly[] handlersAssemblies)
+    {
+        var scanningTypes = handlersAssemblies
+            .SelectMany(x => x.GetTypes())
+            .ToArray();
+        var requestHandlersInfos = GetRequestHandlerImplementationInfos(scanningTypes);
+
+        RegisterIPipelineBehaviorImplementationTypes(services, scanningTypes);
 
         return services;
     }

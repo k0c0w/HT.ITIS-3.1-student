@@ -45,7 +45,8 @@ internal class Mediator : IMediator
 
             foreach (var next in pipeLines)
             {
-                result = () => next.Handle(request, result, cancellationToken);
+                RequestHandlerDelegate<TResponse> handlerTemp = () => next.Handle(request, result, cancellationToken);
+                result = handlerTemp;
             }
 
             return result();

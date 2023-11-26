@@ -20,6 +20,11 @@ public class DeleteUserByAdminCommandHandler : ICommandHandler<DeleteUserByAdmin
     {
         try
         {
+            var user = await _userRepository.GetUserByGuidAsync(request.Guid, cancellationToken);
+
+            if (user == default)
+                return new Result(false, "User does not exist.");
+
             await _userRepository.DeleteUserByGuidAsync(request.Guid, cancellationToken)
                 .ContinueWith((task) => _unitOfWork.SaveChangesAsync(cancellationToken), cancellationToken);
 

@@ -2,6 +2,7 @@
 using Dotnet.Homeworks.Infrastructure.Validation.RequestTypes;
 using Dotnet.Homeworks.Mediator;
 using Dotnet.Homeworks.Shared.Dto;
+using FluentValidation;
 
 namespace Dotnet.Homeworks.Features.PipelineBehaviors;
 

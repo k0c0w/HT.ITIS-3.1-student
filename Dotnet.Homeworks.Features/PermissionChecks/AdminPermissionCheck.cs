@@ -3,6 +3,7 @@ using Dotnet.Homeworks.Infrastructure.Validation.PermissionChecker;
 using Dotnet.Homeworks.Infrastructure.Validation.PermissionChecker.Enums;
 using Dotnet.Homeworks.Infrastructure.Validation.RequestTypes;
 using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
 
 namespace Dotnet.Homeworks.Features.PermissionChecks;
 
@@ -16,7 +17,7 @@ internal class AdminPermissionCheck : PermissionCheck<IAdminRequest>
 
     protected override Task<IEnumerable<PermissionResult>> CheckPermissionFromContextAsync(IAdminRequest request, HttpContext httpContext)
     {
-        var hasAdminRole = httpContext.User.IsInRole(_adminRoleString);
+        var hasAdminRole = _httpContext?.User.Claims.Any(c => c.Type == ClaimTypes.Role && c.Value == _adminRoleString) ?? false;
 
         return hasAdminRole ? TaskFromResult(_succedResult) : TaskFromResult(_deniedResult);
     }
