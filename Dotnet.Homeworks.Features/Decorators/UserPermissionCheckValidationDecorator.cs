@@ -6,7 +6,7 @@ using FluentValidation;
 
 namespace Dotnet.Homeworks.Features.Decorators;
 
-public class UserPermissionCheckValidationDecorator<TRequest, TResponse> : ValidationkDecorator<TRequest, TResponse> where TRequest : IRequest<TResponse>
+public class UserPermissionCheckValidationDecorator<TRequest, TResponse> : ValidationDecorator<TRequest, TResponse> where TRequest : IRequest<TResponse>
 {
     private readonly IPermissionCheck<IClientRequest> _permissionCheck;
 
@@ -25,6 +25,10 @@ public class UserPermissionCheckValidationDecorator<TRequest, TResponse> : Valid
         if (failures.Length == 0)
             return await base.Handle(request, cancellationToken);
 
-        return new Result<TResponse>(default, false, string.Join(' ', failures.Select(x => x.Error))) as dynamic;
+        if (typeof(TResponse) == typeof(Result))
+            return new Result(false, string.Join(' ', failures.Select(x => x.Error))) as dynamic;
+        else
+            return new Result<TResponse>(default, false, string.Join(' ', failures.Select(x => x.Error))) as dynamic;
+
     }
 }

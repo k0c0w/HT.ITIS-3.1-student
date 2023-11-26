@@ -5,22 +5,28 @@ using Dotnet.Homeworks.Shared.Dto;
 
 namespace Dotnet.Homeworks.Features.PipelineBehaviors;
 
-public class AdminPermissionBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, Result<TResponse>> where TRequest : IRequest<Result<TResponse>>, IAdminRequest
+public class AdminPermissionBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> where TRequest : IRequest<TResponse>, IAdminRequest
 {
-    private readonly IPermissionCheck<TRequest> _permissionCheck;
+    private readonly IPermissionCheck<IAdminRequest> _permissionCheck;
 
-    public AdminPermissionBehavior(IPermissionCheck<TRequest> permissionCheck)
+    public AdminPermissionBehavior(IPermissionCheck<IAdminRequest> permissionCheck)
     {
         _permissionCheck = permissionCheck;
     }
 
-    public async Task<Result<TResponse>> Handle(TRequest request, RequestHandlerDelegate<Result<TResponse>> next, CancellationToken cancellationToken)
+    public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
     {
-        var permissionResult = await _permissionCheck.CheckPermissionAsync(request);
+        if (request is not IAdminRequest adminRequest)
+            return await next();
+
+        var permissionResult = await _permissionCheck.CheckPermissionAsync(adminRequest);
 
         if (permissionResult.Any(x => x.IsFailure))
         {
-            return new Result<TResponse>(default, false, string.Join(' ', permissionResult.Where(x => x.IsFailure && !string.IsNullOrEmpty(x.Error)).Select(x => x.Error)));
+            if (typeof(TResponse) == typeof(Result))
+                return new Result(false, string.Join(' ', permissionResult.Where(x => x.IsFailure && !string.IsNullOrEmpty(x.Error)).Select(x => x.Error))) as dynamic;
+            else
+                return new Result<TResponse>(default, false, string.Join(' ', permissionResult.Where(x => x.IsFailure && !string.IsNullOrEmpty(x.Error)).Select(x => x.Error))) as dynamic;
         }
 
         return await next();

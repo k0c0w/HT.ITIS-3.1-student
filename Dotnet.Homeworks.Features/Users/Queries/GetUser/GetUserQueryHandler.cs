@@ -1,16 +1,18 @@
 ﻿using Dotnet.Homeworks.Domain.Abstractions.Repositories;
 using Dotnet.Homeworks.Features.Decorators;
+using Dotnet.Homeworks.Infrastructure.Cqrs.Queries;
 using Dotnet.Homeworks.Infrastructure.Validation.PermissionChecker;
+using Dotnet.Homeworks.Infrastructure.Validation.RequestTypes;
 using Dotnet.Homeworks.Shared.Dto;
 using FluentValidation;
 
 namespace Dotnet.Homeworks.Features.Users.Queries.GetUser;
 
-public class GetUserQueryHandler : CqrsDecorator<GetUserQuery, Result<GetUserDto>>
+public class GetUserQueryHandler : CqrsDecorator<GetUserQuery, Result<GetUserDto>>, IQueryHandler<GetUserQuery, GetUserDto>
 {
     private readonly IUserRepository _userRepository;
 
-    public GetUserQueryHandler(IUserRepository userRepository, IEnumerable<IValidator<GetUserQuery>> validators, IPermissionCheck<GetUserQuery>? permissionCheck) : base(validators, permissionCheck)
+    public GetUserQueryHandler(IUserRepository userRepository, IEnumerable<IValidator<GetUserQuery>> validators, IPermissionCheck<IClientRequest>? permissionCheck) : base(validators, permissionCheck)
     {
         _userRepository = userRepository;
     }
