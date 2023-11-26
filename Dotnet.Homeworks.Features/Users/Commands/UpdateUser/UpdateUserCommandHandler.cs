@@ -1,23 +1,30 @@
 ﻿using Dotnet.Homeworks.Domain.Abstractions.Repositories;
-using Dotnet.Homeworks.Infrastructure.Cqrs.Commands;
+using Dotnet.Homeworks.Features.Decorators;
 using Dotnet.Homeworks.Infrastructure.UnitOfWork;
+using Dotnet.Homeworks.Infrastructure.Validation.PermissionChecker;
 using Dotnet.Homeworks.Shared.Dto;
+using FluentValidation;
 
 namespace Dotnet.Homeworks.Features.Users.Commands.UpdateUser;
 
-public class UpdateUserCommandHandler : ICommandHandler<UpdateUserCommand>
-{
+public class UpdateUserCommandHandler : CqrsDecorator<UpdateUserCommand, Result> 
+{ 
     private readonly IUserRepository _userRepository;
     private readonly IUnitOfWork _unitOfWork;
 
-    public UpdateUserCommandHandler(IUserRepository userRepository, IUnitOfWork unitOfWork)
+    public UpdateUserCommandHandler(IUserRepository userRepository, IUnitOfWork unitOfWork, IEnumerable<IValidator<UpdateUserCommand>> validators, IPermissionCheck<UpdateUserCommand>? permissionCheck) : base(validators, permissionCheck)
     {
         _userRepository = userRepository;
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<Result> Handle(UpdateUserCommand request, CancellationToken cancellationToken)
+    public override async Task<Result> Handle(UpdateUserCommand request, CancellationToken cancellationToken)
     {
+        var pipelineResult = await base.Handle(request, cancellationToken);
+
+        if (pipelineResult.IsFailure)
+            return pipelineResult;
+
         if (cancellationToken.IsCancellationRequested)
             return new Result(false);
 

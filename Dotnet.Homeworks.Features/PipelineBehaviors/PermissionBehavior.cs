@@ -5,7 +5,7 @@ using Dotnet.Homeworks.Shared.Dto;
 
 namespace Dotnet.Homeworks.Features.PipelineBehaviors;
 
-public class AdminPermissionBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, Result<TResponse>> where TRequest : IRequest<TResponse>, IAdminRequest
+public class AdminPermissionBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, Result<TResponse>> where TRequest : IRequest<Result<TResponse>>, IAdminRequest
 {
     private readonly IPermissionCheck<TRequest> _permissionCheck;
 

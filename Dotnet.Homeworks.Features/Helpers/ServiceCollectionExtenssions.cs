@@ -5,11 +5,13 @@ using Dotnet.Homeworks.Features.Users.Commands.DeleteUser;
 using Dotnet.Homeworks.Features.Users.Commands.UpdateUser;
 using Dotnet.Homeworks.Features.Users.Queries.GetUser;
 using Dotnet.Homeworks.Infrastructure.UnitOfWork;
-using Dotnet.Homeworks.Infrastructure.Validation.Decorators;
 using Dotnet.Homeworks.Mediator;
 using Dotnet.Homeworks.Mediator.DependencyInjectionExtensions;
 using Dotnet.Homeworks.Shared.Dto;
 using Microsoft.Extensions.DependencyInjection;
+using FluentValidation;
+using Dotnet.Homeworks.Features.Users.Commands.CreateUser;
+using Dotnet.Homeworks.Features.Decorators;
 
 namespace Dotnet.Homeworks.Features.Helpers;
 
@@ -26,14 +28,16 @@ public static class ServiceCollectionExtenssions
         services
             .AddTransient(typeof(IPipelineBehavior<,>), typeof(AdminPermissionBehavior<,>))
             .AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+        services.AddValidatorsFromAssembly(AssemblyReference.Assembly, ServiceLifetime.Transient);
 
         AddCqrsDecorators(services);
     }
 
     private static void AddCqrsDecorators(IServiceCollection services)
     {
-        services.AddTransient<IRequestHandler<UpdateUserCommand, Result>, CqrsDecorator<UpdateUserCommand>>();
-        services.AddTransient<IRequestHandler<DeleteUserCommand, Result>, CqrsDecorator<DeleteUserCommand>>();
-        services.AddTransient<IRequestHandler<GetUserQuery, Result<GetUserDto>>, CqrsDecorator<GetUserQuery, GetUserDto>>();
+        services.AddTransient<IRequestHandler<UpdateUserCommand, Result>, CqrsDecorator<UpdateUserCommand, Result>>();
+        services.AddTransient<IRequestHandler<DeleteUserCommand, Result>, CqrsDecorator<DeleteUserCommand, Result>>();
+        services.AddTransient<IRequestHandler<GetUserQuery, Result<GetUserDto>>, CqrsDecorator<GetUserQuery, Result<GetUserDto>>>();
+        services.AddTransient<IRequestHandler<CreateUserCommand, Result<CreateUserDto>>, CqrsDecorator<CreateUserCommand, Result<CreateUserDto>>>();
     }
 }

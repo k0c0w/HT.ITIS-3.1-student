@@ -1,24 +1,30 @@
 ﻿using Dotnet.Homeworks.Domain.Abstractions.Repositories;
 using Dotnet.Homeworks.Domain.Entities;
-using Dotnet.Homeworks.Infrastructure.Cqrs.Commands;
+using Dotnet.Homeworks.Features.Decorators;
 using Dotnet.Homeworks.Infrastructure.UnitOfWork;
+using Dotnet.Homeworks.Infrastructure.Validation.PermissionChecker;
 using Dotnet.Homeworks.Shared.Dto;
+using FluentValidation;
 
 namespace Dotnet.Homeworks.Features.Users.Commands.CreateUser;
 
-public class CreateUserCommandHandler : ICommandHandler<CreateUserCommand, CreateUserDto>
+public class CreateUserCommandHandler : CqrsDecorator<CreateUserCommand, Result<CreateUserDto>>
 {
     private readonly IUserRepository _userRepository;
     private readonly IUnitOfWork _unitOfWork;
 
-    public CreateUserCommandHandler(IUserRepository userRepository, IUnitOfWork unitOfWork)
+    public CreateUserCommandHandler(IUserRepository userRepository, IUnitOfWork unitOfWork, IEnumerable<IValidator<CreateUserCommand>> validators, IPermissionCheck<CreateUserCommand>? permissionCheck) : base(validators, permissionCheck)
     {
         _userRepository = userRepository;
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<Result<CreateUserDto>> Handle(CreateUserCommand request, CancellationToken cancellationToken)
+    public override async Task<Result<CreateUserDto>> Handle(CreateUserCommand request, CancellationToken cancellationToken)
     {
+        var pipelineResult = await base.Handle(request, cancellationToken);
+        if (pipelineResult.IsFailure)
+            return pipelineResult;
+
         if (cancellationToken.IsCancellationRequested)
             return new Result<CreateUserDto>(null, false);
 

@@ -17,13 +17,29 @@ public static class ServiceCollectionExtensions
             .Where(tuple => tuple.Interfaces.Any())
             .ToArray();
 
-        RegisterHandler(services, typeof(IRequestHandler<,>), assemblyClassesWithGenericInterfaces);
-        RegisterHandler(services, typeof(IPipelineBehavior<,>), assemblyClassesWithGenericInterfaces);
+        RegisterHandler(services,typeof(IRequestHandler<,>), assemblyClassesWithGenericInterfaces);
+
+        #region pipeline
+        var handlers = assemblyClassesWithGenericInterfaces
+               .Select(tuple => (Type: tuple.Item1, CommandHandlerInterfaces: tuple.Item2.Where(i => i.GetGenericTypeDefinition() == typeof(IRequestHandler<,>)).ToArray()))
+               .Where(tuple => tuple.CommandHandlerInterfaces.Any())
+               .ToArray();
+
+        foreach (var handlerInfo in handlers)
+            foreach (var queryInterface in handlerInfo.CommandHandlerInterfaces)
+            {
+                services.AddTransient(queryInterface, handlerInfo.Type);
+            }
+        #endregion
+
+
+
 
         var map = assemblyClassesWithGenericInterfaces
             .Select(tuple => (Type: tuple.Item1, CommandHandlerInterfaces: tuple.Item2.Where(i => i.GetGenericTypeDefinition() == typeof(IRequestHandler<,>)).ToArray()))
             .Where(tuple => tuple.CommandHandlerInterfaces.Any())
-            .ToDictionary(key => key.Type.GetGenericArguments()[0], value => value.Type);
+            .SelectMany(x => x.CommandHandlerInterfaces.Select(y => (x.Type, y.GetGenericArguments()[0])))
+            .ToDictionary(key => key.Item2, value => value.Item1);
 
 
         services.AddSingleton(new MediatorRequestToHandlerMap(map));
@@ -35,12 +51,14 @@ public static class ServiceCollectionExtensions
     private static void RegisterHandler(IServiceCollection services, Type handlerType, (Type, Type[])[] typesWithInterfaces)
     {
         var handlers = typesWithInterfaces
-               .Select(tuple => (Type: tuple.Item1, CommandHandlerInterfaces: tuple.Item2.Where(i => i.GetGenericTypeDefinition() == handlerType).ToArray()))
-               .Where(tuple => tuple.CommandHandlerInterfaces.Any())
-               .ToArray();
+       .Select(tuple => (Type: tuple.Item1, CommandHandlerInterfaces: tuple.Item2.Where(i => i.GetGenericTypeDefinition() == typeof(IRequestHandler<,>)).ToArray()))
+       .Where(tuple => tuple.CommandHandlerInterfaces.Any())
+       .ToArray();
 
         foreach (var handlerInfo in handlers)
             foreach (var queryInterface in handlerInfo.CommandHandlerInterfaces)
-                services.AddScoped(queryInterface, handlerInfo.Type);
+            {
+                services.AddTransient(queryInterface, handlerInfo.Type);
+            }
     }
 }

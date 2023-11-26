@@ -18,7 +18,7 @@ internal class Mediator : IMediator
         ThrowArgumentNullExceptionIfNull(request, nameof(request));
 
         var requestType = request.GetType();
-        if (_requestToHandlerMap.ContainsKey(requestType))
+        if (!_requestToHandlerMap.ContainsKey(requestType))
             throw new InvalidOperationException("Request was not found in registered requests.");
         var handlerType = _requestToHandlerMap[requestType];
 
