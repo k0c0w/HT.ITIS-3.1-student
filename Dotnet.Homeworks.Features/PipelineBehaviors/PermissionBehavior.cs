@@ -24,10 +24,7 @@ public class AdminPermissionBehavior<TRequest, TResponse> : IPipelineBehavior<TR
 
         if (permissionResult.Any(x => x.IsFailure))
         {
-            if (typeof(TResponse) == typeof(Result))
-                return new Result(false, string.Join(' ', permissionResult.Where(x => x.IsFailure && !string.IsNullOrEmpty(x.Error)).Select(x => x.Error))) as dynamic;
-            else
-                return new Result<TResponse>(default, false, string.Join(' ', permissionResult.Where(x => x.IsFailure && !string.IsNullOrEmpty(x.Error)).Select(x => x.Error))) as dynamic;
+            return string.Join(' ', permissionResult.Where(x => x.IsFailure && !string.IsNullOrEmpty(x.Error)).Select(x => x.Error)) as dynamic;
         }
 
         return await next();

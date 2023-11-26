@@ -21,7 +21,7 @@ public class GetUserQueryHandler : CqrsDecorator<GetUserQuery, Result<GetUserDto
     {
         var pipelineResult = await base.Handle(request, cancellationToken);
         if (pipelineResult.IsFailure)
-            return pipelineResult;
+            return new Result<GetUserDto>(default, false, pipelineResult.Error);
 
         var user = await _userRepository.GetUserByGuidAsync(request.Guid, cancellationToken)!;
 

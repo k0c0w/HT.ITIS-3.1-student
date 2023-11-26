@@ -25,20 +25,10 @@ public class UpdateUserCommandHandler : CqrsDecorator<UpdateUserCommand, Result>
         var pipelineResult = await base.Handle(request, cancellationToken);
 
         if (pipelineResult.IsFailure)
-            return pipelineResult;
-
-        if (cancellationToken.IsCancellationRequested)
-            return new Result(false);
+            return new Result(false, pipelineResult.Error);
 
         await _userRepository.UpdateUserAsync(request.User, cancellationToken);
-
-        if (cancellationToken.IsCancellationRequested)
-            return new Result(false);
-
         await _unitOfWork.SaveChangesAsync(cancellationToken);
-
-        if (cancellationToken.IsCancellationRequested)
-            return new Result(false);
 
         return new Result(true);
     }

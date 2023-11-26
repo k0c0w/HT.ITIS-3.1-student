@@ -25,15 +25,11 @@ public class DeleteUserCommandHandler : CqrsDecorator<DeleteUserCommand, Result>
         var pipelineResult = await base.Handle(request, cancellationToken);
 
         if (pipelineResult.IsFailure)
-            return pipelineResult;
+            return new Result(false, pipelineResult.Error);
 
         try
         {
             await _userRepository.DeleteUserByGuidAsync(request.Guid, cancellationToken);
-
-            if (cancellationToken.IsCancellationRequested)
-                return new Result(false);
-
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return new Result(true);

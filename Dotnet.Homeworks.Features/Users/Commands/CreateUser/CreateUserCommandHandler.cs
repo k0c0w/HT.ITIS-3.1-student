@@ -25,10 +25,7 @@ public class CreateUserCommandHandler : CqrsDecorator<CreateUserCommand, Result<
     {
         var pipelineResult = await base.Handle(request, cancellationToken);
         if (pipelineResult.IsFailure)
-            return pipelineResult;
-
-        if (cancellationToken.IsCancellationRequested)
-            return new Result<CreateUserDto>(null, false);
+            return new Result<CreateUserDto>(default, false, pipelineResult.Error);
 
         var user = new User()
         {
@@ -39,15 +36,7 @@ public class CreateUserCommandHandler : CqrsDecorator<CreateUserCommand, Result<
         try
         {
             var guid = await _userRepository.InsertUserAsync(user, cancellationToken);
-
-            if (cancellationToken.IsCancellationRequested)
-                return new Result<CreateUserDto>(null, false);
-
             await _unitOfWork.SaveChangesAsync(cancellationToken);
-
-            if (cancellationToken.IsCancellationRequested)
-                return new Result<CreateUserDto>(null, false);
-
 
             return new Result<CreateUserDto>(new CreateUserDto(guid), false);
         }
