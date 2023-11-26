@@ -12,6 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using FluentValidation;
 using Dotnet.Homeworks.Features.Users.Commands.CreateUser;
 using Dotnet.Homeworks.Features.Decorators;
+using Dotnet.Homeworks.Infrastructure.Validation.PermissionChecker.DependencyInjectionExtensions;
 
 namespace Dotnet.Homeworks.Features.Helpers;
 
@@ -25,12 +26,9 @@ public static class ServiceCollectionExtenssions
 
         services.AddMediator(AssemblyReference.Assembly);
         
-        services
-            .AddTransient(typeof(IPipelineBehavior<,>), typeof(AdminPermissionBehavior<,>))
-            .AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
         services.AddValidatorsFromAssembly(AssemblyReference.Assembly, ServiceLifetime.Transient);
 
-        AddCqrsDecorators(services);
+        services.AddPermissionChecks(AssemblyReference.Assembly);
     }
 
     private static void AddCqrsDecorators(IServiceCollection services)
