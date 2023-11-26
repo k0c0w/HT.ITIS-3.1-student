@@ -47,6 +47,11 @@ public class UserRepository : IUserRepository
 
     public async Task<Guid> InsertUserAsync(User user, CancellationToken cancellationToken)
     {
+        var emailAlreadyExists = await _ctx.Users.AnyAsync(x => x.Email == user.Email);
+
+        if (emailAlreadyExists)
+            throw new InvalidOperationException("User with such email already exists.");
+
         await _ctx.AddAsync(user, cancellationToken);
 
         return user.Id;

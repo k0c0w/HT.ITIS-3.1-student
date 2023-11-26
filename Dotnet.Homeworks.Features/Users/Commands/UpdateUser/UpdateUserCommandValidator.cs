@@ -2,7 +2,7 @@
 
 namespace Dotnet.Homeworks.Features.Users.Commands.UpdateUser;
 
-internal class UpdateUserCommandValidator : AbstractValidator<UpdateUserCommand>
+public class UpdateUserCommandValidator : AbstractValidator<UpdateUserCommand>
 {
 	public UpdateUserCommandValidator()
 	{
