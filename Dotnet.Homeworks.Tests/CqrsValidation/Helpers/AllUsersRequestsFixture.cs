@@ -1,6 +1,7 @@
 using System.Reflection;
 using Dotnet.Homeworks.Infrastructure.Cqrs.Commands;
 using Dotnet.Homeworks.Infrastructure.Cqrs.Queries;
+using Dotnet.Homeworks.Mediator;
 using Dotnet.Homeworks.Tests.Cqrs.Helpers;
 
 namespace Dotnet.Homeworks.Tests.CqrsValidation.Helpers;
@@ -41,9 +42,8 @@ public class AllUsersRequestsFixture : IDisposable, ICollectionFixture<AllUsersR
     {
         var interfaces = new List<Type>()
         {
-            typeof(ICommandHandler<,>),
-            typeof(ICommandHandler<>),
-            typeof(IQueryHandler<,>),
+            typeof(IRequestHandler<,>),
+            typeof(IRequestHandler<,>),
         };
 
         var types = AssemblyFeatures.GetTypes()

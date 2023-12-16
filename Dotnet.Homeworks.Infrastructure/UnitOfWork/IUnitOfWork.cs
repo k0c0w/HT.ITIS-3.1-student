@@ -1,4 +1,5 @@
-﻿namespace Dotnet.Homeworks.Infrastructure.UnitOfWork;
+﻿
+namespace Dotnet.Homeworks.Infrastructure.UnitOfWork;
 
 public interface IUnitOfWork
 {

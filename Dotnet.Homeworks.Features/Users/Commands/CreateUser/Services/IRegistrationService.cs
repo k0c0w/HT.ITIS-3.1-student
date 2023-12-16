@@ -1,6 +1,4 @@
-﻿using Dotnet.Homeworks.MainProject.Dto;
-
-namespace Dotnet.Homeworks.MainProject.Services;
+﻿namespace Dotnet.Homeworks.Features.Users.Commands.CreateUser.Services;
 
 public interface IRegistrationService
 {

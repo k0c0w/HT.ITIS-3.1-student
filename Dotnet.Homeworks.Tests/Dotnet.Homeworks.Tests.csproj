@@ -10,12 +10,13 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.7.1" />
+        <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.8.0" />
         <PackageReference Include="Mapster" Version="7.4.0-pre06" />
         <PackageReference Include="MassTransit.TestFramework" Version="8.0.16" />
         <PackageReference Include="MediatR" Version="12.1.1" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.5.0" />
         <PackageReference Include="Minio" Version="5.0.0" />
+        <PackageReference Include="Moq" Version="4.10.0" />
         <PackageReference Include="NetArchTest.Rules" Version="1.3.2" />
         <PackageReference Include="NSubstitute" Version="5.0.0" />
         <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">

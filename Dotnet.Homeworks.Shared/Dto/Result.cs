@@ -12,6 +12,16 @@ public class Result
         if (error is not null) 
             Error = error;
     }
+
+    public static implicit operator Result(bool isSuccessful)
+    {
+        return new Result(isSuccessful);
+    }
+
+    public static implicit operator Result(string errors)
+    {
+        return new Result(false, errors);
+    }
 }
 
 public class Result<TValue> : Result
@@ -27,4 +37,19 @@ public class Result<TValue> : Result
     public TValue? Value => IsSuccess
         ? _value
         : throw new Exception(Error);
+
+    public static implicit operator Result<TValue>(TValue value)
+    {
+        return new Result<TValue>(value, true);
+    }
+
+    public static implicit operator Result<TValue>(bool isSuccessful)
+    {
+        return new Result<TValue>(default, isSuccessful);
+    }
+
+    public static implicit operator Result<TValue>(string errors)
+    {
+        return new Result<TValue>(default, false, errors);
+    }
 }

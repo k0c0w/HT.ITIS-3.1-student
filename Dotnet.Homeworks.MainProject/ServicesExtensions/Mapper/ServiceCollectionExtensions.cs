@@ -2,7 +2,7 @@ using System.Reflection;
 
 namespace Dotnet.Homeworks.MainProject.ServicesExtensions.Mapper;
 
-public static class ServiceCollectionExtensions
+public static partial class ServiceCollectionExtensions
 {
     public static IServiceCollection AddMappers(this IServiceCollection services, Assembly mapperConfigsAssembly)
     {

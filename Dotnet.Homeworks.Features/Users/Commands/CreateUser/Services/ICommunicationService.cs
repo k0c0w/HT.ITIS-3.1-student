@@ -1,6 +1,6 @@
 ﻿using Dotnet.Homeworks.Shared.MessagingContracts.Email;
 
-namespace Dotnet.Homeworks.MainProject.Services;
+namespace Dotnet.Homeworks.Features.Users.Commands.CreateUser.Services;
 
 public interface ICommunicationService
 {

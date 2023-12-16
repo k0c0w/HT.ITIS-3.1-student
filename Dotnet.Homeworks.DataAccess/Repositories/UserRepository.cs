@@ -1,32 +1,59 @@
-﻿using Dotnet.Homeworks.Domain.Abstractions.Repositories;
+﻿using Dotnet.Homeworks.Data.DatabaseContext;
+using Dotnet.Homeworks.Domain.Abstractions.Repositories;
 using Dotnet.Homeworks.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace Dotnet.Homeworks.DataAccess.Repositories;
 
 public class UserRepository : IUserRepository
 {
-    public Task<IQueryable<User>> GetUsersAsync(CancellationToken cancellationToken)
+    private readonly AppDbContext _ctx;
+
+    public UserRepository(AppDbContext context)
     {
-        throw new NotImplementedException();
+        _ctx = context;
+    }
+
+    public async Task<IQueryable<User>> GetUsersAsync(CancellationToken cancellationToken)
+    {
+       return (await _ctx.Users.ToArrayAsync(cancellationToken)).AsQueryable();
     }
 
     public Task<User?> GetUserByGuidAsync(Guid guid, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        return _ctx.Users.FirstOrDefaultAsync(x => x.Id == guid, cancellationToken);
     }
 
-    public Task DeleteUserByGuidAsync(Guid guid, CancellationToken cancellationToken)
+    public async Task DeleteUserByGuidAsync(Guid guid, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var user = await GetUserByGuidAsync(guid, cancellationToken);
+
+        if (cancellationToken.IsCancellationRequested)
+            return;
+
+        if (user == null)
+            throw new InvalidOperationException($"User was not found: {guid}.");
+
+        _ctx.Users.Remove(user);
     }
 
     public Task UpdateUserAsync(User user, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        if (!cancellationToken.IsCancellationRequested)
+            _ctx.Users.Update(user);
+
+        return Task.CompletedTask;
     }
 
-    public Task<Guid> InsertUserAsync(User user, CancellationToken cancellationToken)
+    public async Task<Guid> InsertUserAsync(User user, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var emailAlreadyExists = await _ctx.Users.AnyAsync(x => x.Email == user.Email);
+
+        if (emailAlreadyExists)
+            throw new InvalidOperationException("User with such email already exists.");
+
+        await _ctx.AddAsync(user, cancellationToken);
+
+        return user.Id;
     }
 }
