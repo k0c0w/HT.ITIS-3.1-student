@@ -31,6 +31,14 @@ public class ImageStorage : IStorage<Image>
             return objectExistanceResult;
         if (objectExistanceResult.Value)
             return new Result(false, error: $"Object with name \"{item.FileName}\" had been added to upload queue.");
+        
+        if (item.Metadata.TryGetValue(MetadataKeys.Destination, out var destinationBucket))
+        {
+            if (destinationBucket != _targetBucket)
+                item.Metadata[MetadataKeys.Destination] = _targetBucket;
+        }
+        else 
+            item.Metadata.Add(MetadataKeys.Destination, _targetBucket);
 
         var args = new PutObjectArgs()
             .WithBucket(Buckets.Pending)
@@ -39,14 +47,6 @@ public class ImageStorage : IStorage<Image>
             .WithContentType(item.ContentType)
             .WithHeaders(item.Metadata)
             .WithStreamData(item.Content);
-
-        if (item.Metadata.TryGetValue(MetadataKeys.Destination, out var destinationBucket))
-        {
-            if (destinationBucket != _targetBucket)
-                item.Metadata[MetadataKeys.Destination] = _targetBucket;
-        }
-        else 
-            item.Metadata.Add(MetadataKeys.Destination, _targetBucket);
 
         try
         {
@@ -161,8 +161,9 @@ public class ImageStorage : IStorage<Image>
 
         try
         {
-            await _client.StatObjectAsync(args);
-            return new Result<bool>(true, true);
+            var stats = await _client.StatObjectAsync(args);
+            bool fileExists = !stats.ExtraHeaders.TryGetValue("X-Minio-Error-Desc", out string? value) || value != "\"The specified key does not exist.\"";
+            return new Result<bool>(fileExists, true);
         }
         catch (ErrorResponseException)
         {

@@ -11,5 +11,5 @@ public class MinioEnvironment
     }
 
     public IStorageFactory StorageFactory { get; }
-    public static async Task WaitForBackgroundServiceAsync() => await Task.Delay(PendingObjectProcessor.Period * 1.1);
+    public static async Task WaitForBackgroundServiceAsync() => await Task.Delay(PendingObjectProcessor.Period * 1.5);
 }
