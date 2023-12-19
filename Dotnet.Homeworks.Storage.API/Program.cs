@@ -1,12 +1,21 @@
-using Dotnet.Homeworks.Storage.API.Configuration;
 using Dotnet.Homeworks.Storage.API.Endpoints;
 using Dotnet.Homeworks.Storage.API.Services;
+using Dotnet.Homeworks.Storage.API.ServicesExtensions;
+using MinioConfig = Dotnet.Homeworks.Storage.API.Configuration.MinioConfig;
 
 var builder = WebApplication.CreateBuilder(args);
+var services = builder.Services;
+var configuration = builder.Configuration;
 
-builder.Services.Configure<MinioConfig>(builder.Configuration.GetSection("MinioConfig"));
-builder.Services.AddSingleton<IStorageFactory, StorageFactory>();
-builder.Services.AddHostedService<PendingObjectsProcessor>();
+var minioConfig = new MinioConfig();
+var minioConfigSection = configuration.GetSection(nameof(MinioConfig));
+minioConfigSection.Bind(minioConfig);
+
+
+services.Configure<MinioConfig>(minioConfigSection);
+services.AddMinioClient(minioConfig);
+services.AddSingleton<IStorageFactory, StorageFactory>();
+services.AddHostedService<PendingObjectsProcessor>();
 
 var app = builder.Build();
 
