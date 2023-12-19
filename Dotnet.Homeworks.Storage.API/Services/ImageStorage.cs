@@ -21,10 +21,6 @@ public class ImageStorage : IStorage<Image>
 
     public async Task<Result> PutItemAsync(Image item, CancellationToken cancellationToken = default)
     {
-        var bucketValidationResult = await CreateBucketIfNotExistsAsync();
-        if (bucketValidationResult.IsFailure)
-            return bucketValidationResult;
-
         var objectExistanceResult = await ObjectExitstsAsync(_targetBucket, item.FileName);
         if (objectExistanceResult.IsFailure)
             return objectExistanceResult;
@@ -148,31 +144,6 @@ public class ImageStorage : IStorage<Image>
         try
         {
             await _client.CopyObjectAsync(args, cancellationToken);
-
-            return new Result(true);
-        }
-        catch (MinioException ex)
-        {
-            return new Result(false, error: ex.Message);
-        }
-    }
-
-    private async Task<Result> CreateBucketIfNotExistsAsync()
-    {
-        try
-        {
-            var bucketExistsArgs = new BucketExistsArgs()
-           .WithBucket(_targetBucket);
-
-            var bucketExists = await _client.BucketExistsAsync(bucketExistsArgs);
-
-            if (!bucketExists)
-            {
-                var args = new MakeBucketArgs()
-                    .WithBucket(_targetBucket);
-
-                await _client.MakeBucketAsync(args);
-            }
 
             return new Result(true);
         }

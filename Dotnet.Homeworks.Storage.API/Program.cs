@@ -16,6 +16,7 @@ services.Configure<MinioConfig>(minioConfigSection);
 services.AddMinioClient(minioConfig);
 services.AddSingleton<IStorageFactory, StorageFactory>();
 services.AddHostedService<PendingObjectsProcessor>();
+services.AddLogging();
 
 var app = builder.Build();
 
