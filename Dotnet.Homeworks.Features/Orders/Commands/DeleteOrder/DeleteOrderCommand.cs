@@ -1,6 +1,8 @@
+using Dotnet.Homeworks.Infrastructure.Cqrs.Commands;
+
 namespace Dotnet.Homeworks.Features.Orders.Commands.DeleteOrder;
 
-public class DeleteOrderByGuidCommand // TODO: implement interface
+public class DeleteOrderByGuidCommand : ICommand
 {
     public DeleteOrderByGuidCommand(Guid id)
     {

@@ -1,6 +1,8 @@
+using Dotnet.Homeworks.Infrastructure.Cqrs.Queries;
+
 namespace Dotnet.Homeworks.Features.Orders.Queries.GetOrder;
 
-public class GetOrderQuery // TODO: implement interface
+public class GetOrderQuery : IQuery<GetOrderDto>
 {
     public GetOrderQuery(Guid id)
     {

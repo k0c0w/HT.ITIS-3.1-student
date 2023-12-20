@@ -1,6 +1,8 @@
+using Dotnet.Homeworks.Infrastructure.Cqrs.Commands;
+
 namespace Dotnet.Homeworks.Features.Orders.Commands.CreateOrder;
 
-public class CreateOrderCommand // TODO: implement interface
+public class CreateOrderCommand : ICommand<CreateOrderDto>
 {
     public CreateOrderCommand(IEnumerable<Guid> productsIds)
     {
