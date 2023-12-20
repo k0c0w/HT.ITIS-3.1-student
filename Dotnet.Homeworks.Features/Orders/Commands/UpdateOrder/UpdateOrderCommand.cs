@@ -2,7 +2,7 @@ using Dotnet.Homeworks.Infrastructure.Cqrs.Commands;
 
 namespace Dotnet.Homeworks.Features.Orders.Commands.UpdateOrder;
 
-public class UpdateOrderCommand : ICommand
+public class UpdateOrderCommand : ICommand, IAmOrderOwner
 {
     public UpdateOrderCommand(Guid orderId, IEnumerable<Guid> productsIds)
     {

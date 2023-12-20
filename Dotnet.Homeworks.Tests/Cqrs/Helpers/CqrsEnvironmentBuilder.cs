@@ -30,7 +30,6 @@ internal class CqrsEnvironmentBuilder : TestEnvironmentBuilder<CqrsEnvironment>
 
     private IUnitOfWork UnitOfWork { get; set; } = Substitute.For<IUnitOfWork>();
     private MediatR.IMediator MediatR { get; set; } = Substitute.For<MediatR.IMediator>();
-    private IBus Bus { get; set; } = Substitute.For<IBus>();
     private Mediator.IMediator CustomMediator { get; set; } = Substitute.For<Mediator.IMediator>();
     private ProductManagementController? ProductManagementController { get; set; }
 
@@ -85,7 +84,7 @@ internal class CqrsEnvironmentBuilder : TestEnvironmentBuilder<CqrsEnvironment>
         GetMockedMediatorFromServiceProvider();
 
         return new CqrsEnvironment(ProductManagementController,
-            UnitOfWork, MediatR, CustomMediator, UserRepositoryMock, Bus);
+            UnitOfWork, MediatR, CustomMediator, UserRepositoryMock);
     }
 
     public void SetupHttpContextClaims(List<Claim> claims)

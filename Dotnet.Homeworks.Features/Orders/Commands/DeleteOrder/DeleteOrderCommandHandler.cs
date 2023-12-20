@@ -20,6 +20,11 @@ public class DeleteOrderCommandHandler : ICommandHandler<DeleteOrderByGuidComman
     {
         try
         {
+            var orderToDelete = await _orderRepository.GetOrderByGuidAsync(request.OrderId, cancellationToken);
+
+            if (orderToDelete == null)
+                return new Result(false, error: $"Order ({request.OrderId}) was not found.");
+
             await _orderRepository.DeleteOrderByGuidAsync(request.Id, cancellationToken);
 
             return true;

@@ -22,7 +22,7 @@ public class GetOrderQueryHandler : IQueryHandler<GetOrderQuery, GetOrderDto>
         {
             var order = await _orderRepository.GetOrderByGuidAsync(request.Id, cancellationToken);
             if (order == null)
-                return new Result<GetOrderDto>(default, true, error: "Order was not found");
+                return new Result<GetOrderDto>(default, false, error: "Order was not found");
 
             return new Result<GetOrderDto>(new GetOrderDto(order.Id, order.ProductsIds), true);
         }
