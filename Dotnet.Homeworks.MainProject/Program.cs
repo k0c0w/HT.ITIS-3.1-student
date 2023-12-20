@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using Dotnet.Homeworks.Features.Helpers;
 using Dotnet.Homeworks.MainProject.ServicesExtensions.MongoDb;
+using Dotnet.Homeworks.MainProject.ServicesExtensions.DataAccess;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
@@ -14,18 +15,18 @@ var mongoDBConfig = builder.Configuration.GetSection(nameof(MongoDbConfig)).Get<
 
 services.AddControllers();
 
+services.AddFeaturesDependencies();
+
 services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(configuration.GetConnectionString("Default")));
+services.RegisterDataAccessServices(configuration);
+services.AddMongoClient(mongoDBConfig);
 
-services.AddFeaturesDependencies();
+services.AddMasstransitRabbitMq(rabbitMQConfig);
 
 services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie();
 services.AddAuthorization();
-
-services.AddMasstransitRabbitMq(rabbitMQConfig);
-services.AddMongoClient(mongoDBConfig);
-
 
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGen();
