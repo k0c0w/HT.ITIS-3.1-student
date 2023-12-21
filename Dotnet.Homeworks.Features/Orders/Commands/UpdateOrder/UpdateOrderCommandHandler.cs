@@ -36,6 +36,7 @@ public class UpdateOrderCommandHandler : ICommandHandler<UpdateOrderCommand>
             if (!productsExist)
                 return new Result<CreateOrderDto>(default, false, error: "Provide existing products with order.");
 
+
             var updatedOrder = new Order()
             {
                 Id = order.Id,
