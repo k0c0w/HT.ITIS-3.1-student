@@ -6,7 +6,7 @@ namespace Dotnet.Homeworks.DataAccess.Specs;
 public class UsersSpecs : IUsersSpecs
 {
     #region Specs defenitions
-    private static readonly Specification<User> _userHas32LenghtNameSpec = new (u => u.Name.Length > 32);
+    private static readonly Specification<User> _userHasMoreThan11LenghtNameSpec = new (u => u.Name.Length > 11);
     private static readonly Specification<User> _userNameContainsWhiteSpaceSpec = new (u => u.Name.Contains(' '));
     private static readonly Specification<User> _userNameContainsHyphenSpec = new (u => u.Name.Contains('-'));
 
@@ -31,7 +31,7 @@ public class UsersSpecs : IUsersSpecs
 
     public Specification<User> HasPopularEmailVendor() => HasGoogleEmail() | HasYandexEmail() | HasMailEmail();
 
-    public Specification<User> HasLongName() => _userHas32LenghtNameSpec;
+    public Specification<User> HasLongName() => _userHasMoreThan11LenghtNameSpec;
 
     public Specification<User> HasCompositeNameWithWhitespace() => _userNameContainsWhiteSpaceSpec;
 
@@ -39,5 +39,5 @@ public class UsersSpecs : IUsersSpecs
 
     public Specification<User> HasCompositeName() => HasCompositeNameWithHyphen() | HasCompositeNameWithWhitespace();
 
-    public Specification<User> HasComplexName() => HasCompositeNameWithHyphen() & HasCompositeNameWithWhitespace();
+    public Specification<User> HasComplexName() => HasLongName() & HasCompositeName();
 }
