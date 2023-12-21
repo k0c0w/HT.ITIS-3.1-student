@@ -5,48 +5,39 @@ namespace Dotnet.Homeworks.DataAccess.Specs;
 
 public class UsersSpecs : IUsersSpecs
 {
-    public Specification<User> HasGoogleEmail()
-    {
-        throw new NotImplementedException();
-    }
+    #region Specs defenitions
+    private static readonly Specification<User> _userHas32LenghtNameSpec = new (u => u.Name.Length > 32);
+    private static readonly Specification<User> _userNameContainsWhiteSpaceSpec = new (u => u.Name.Contains(' '));
+    private static readonly Specification<User> _userNameContainsHyphenSpec = new (u => u.Name.Contains('-'));
 
-    public Specification<User> HasYandexEmail()
-    {
-        throw new NotImplementedException();
-    }
 
-    public Specification<User> HasMailEmail()
-    {
-        throw new NotImplementedException();
-    }
+    private static readonly Specification<User> _userHasGoogleEmailSpec = new (user => user.Email != null && user.Email.ToLower().EndsWith("@gmail.com"));
+    private static readonly Specification<User> _userHasMailRuEmailSpec = new (user => user.Email != null && user.Email.ToLower().EndsWith("@mail.ru"));
+    private static readonly Specification<User> _userHasYandexEmailSpec = new (user => user.Email != null
+                                                                                                && (user.Email.ToLower().EndsWith("@yandex.ru")
+                                                                                                   || user.Email.ToLower().EndsWith("@yandex.com")
+                                                                                                   || user.Email.ToLower().EndsWith("@yandex.ua")
+                                                                                                   || user.Email.ToLower().EndsWith("@yandex.kz")
+                                                                                                   || user.Email.ToLower().EndsWith("@yandex.by")
+                                                                                                   || user.Email.ToLower().EndsWith("@ya.ru")
+                                                                                                   || user.Email.ToLower().EndsWith("@narod.ru")));
+    #endregion
 
-    public Specification<User> HasPopularEmailVendor()
-    {
-        throw new NotImplementedException();
-    }
+    public Specification<User> HasGoogleEmail() => _userHasGoogleEmailSpec;
 
-    public Specification<User> HasLongName()
-    {
-        throw new NotImplementedException();
-    }
+    public Specification<User> HasYandexEmail() => _userHasYandexEmailSpec;
 
-    public Specification<User> HasCompositeNameWithWhitespace()
-    {
-        throw new NotImplementedException();
-    }
+    public Specification<User> HasMailEmail() => _userHasMailRuEmailSpec;
 
-    public Specification<User> HasCompositeNameWithHyphen()
-    {
-        throw new NotImplementedException();
-    }
+    public Specification<User> HasPopularEmailVendor() => HasGoogleEmail() | HasYandexEmail() | HasMailEmail();
 
-    public Specification<User> HasCompositeName()
-    {
-        throw new NotImplementedException();
-    }
+    public Specification<User> HasLongName() => _userHas32LenghtNameSpec;
 
-    public Specification<User> HasComplexName()
-    {
-        throw new NotImplementedException();
-    }
+    public Specification<User> HasCompositeNameWithWhitespace() => _userNameContainsWhiteSpaceSpec;
+
+    public Specification<User> HasCompositeNameWithHyphen() => _userNameContainsHyphenSpec;
+
+    public Specification<User> HasCompositeName() => HasCompositeNameWithHyphen() | HasCompositeNameWithWhitespace();
+
+    public Specification<User> HasComplexName() => HasCompositeNameWithHyphen() & HasCompositeNameWithWhitespace();
 }
