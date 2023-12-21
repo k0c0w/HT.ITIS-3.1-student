@@ -75,4 +75,9 @@ public class ProductRepository : IProductRepository
         if (entry != null)
             entry.State = EntityState.Detached;
     }
+
+    public Task<bool> ExistsByIdAsync(Guid id, CancellationToken cancellationToken)
+    {
+        return _ctx.Products.AnyAsync(x => x.Id == id, cancellationToken);
+    }
 }

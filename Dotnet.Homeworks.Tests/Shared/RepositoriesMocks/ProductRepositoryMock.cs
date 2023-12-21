@@ -16,7 +16,7 @@ public class ProductRepositoryMock : IProductRepository
 
     public Task DeleteProductByGuidAsync(Guid id, CancellationToken cancellationToken)
     {
-        _products.Remove(id, out var product);
+        _products.Remove(id, out var _);
         return Task.CompletedTask;
     }
 
@@ -32,5 +32,10 @@ public class ProductRepositoryMock : IProductRepository
     {
         _products.TryAdd(product.Id, product);
         return Task.FromResult(product.Id);
+    }
+
+    public Task<bool> ExistsByIdAsync(Guid id, CancellationToken cancellationToken)
+    {
+        return Task.FromResult(_products.TryGetValue(id, out var _));
     }
 }

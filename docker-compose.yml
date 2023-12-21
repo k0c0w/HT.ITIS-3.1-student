@@ -14,13 +14,13 @@ services:
     image: dotnet-web
     ports:
       - "8080:5000"
-
     build:
       dockerfile: Dotnet.Homeworks.MainProject/Dockerfile
       
     depends_on:
       - dotnet_postgres
       - dotnet_rabbitmq
+      - dotnet_mongodb
 
     environment:
       ConnectionStrings__Default : Host=localhost;Database=DotNetHomework;Port=5432;Username=sa2;Password=328732aA!nf;gfh
@@ -28,6 +28,7 @@ services:
       RabbitMQ__Password: itpkldsow12l433kkj
       RabbitMQ__Hostname: rabbitmq
       RabbitMQ__Port: 5672
+      MongoDBConfig__ConnectionString : mongodb://mongoUser:dfmglkdflgmdgflkmdf49330m@dotnet_mongodb:27017/MainProjectDB
 
   dotnet_rabbitmq:
     image: rabbitmq:3-alpine
@@ -39,9 +40,15 @@ services:
         RABBITMQ_DEFAULT_USER: k0c0w
         RABBITMQ_DEFAULT_PASS: itpkldsow12l433kkj
 
-  #dotnet_mongodb:
-  #  image: mongo:latest
-  #  
+  dotnet_mongodb:
+    image: mongo:latest
+    container_name: dotnet_mongodb
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME : mongoUser
+      MONGO_INITDB_ROOT_PASSWORD : dfmglkdflgmdgflkmdf49330m
+    
   #dotnet_jaeger:
   #  image: jaegertracing/all-in-one:latest
   #  

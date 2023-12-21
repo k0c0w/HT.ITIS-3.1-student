@@ -38,7 +38,6 @@ public class CreateUserCommandHandler : CqrsDecorator<CreateUserCommand, Result<
 
         try
         {
-
             var users = await _userRepository.GetUsersAsync(cancellationToken);
             if (users.Any(x => x.Email == request.Email))
                return new Result<CreateUserDto>(null, false);
@@ -47,7 +46,7 @@ public class CreateUserCommandHandler : CqrsDecorator<CreateUserCommand, Result<
             await _unitOfWork.SaveChangesAsync(cancellationToken);
             try
             {
-                await _registrationService.RegisterAsync(new RegisterUserDto(user.Name, user.Email));
+               await _registrationService.RegisterAsync(new RegisterUserDto(user.Name, user.Email));
             }
             catch
             {

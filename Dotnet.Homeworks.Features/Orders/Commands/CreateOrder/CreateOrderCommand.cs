@@ -1,6 +1,7 @@
+using Dotnet.Homeworks.Infrastructure.Cqrs.Commands;
 namespace Dotnet.Homeworks.Features.Orders.Commands.CreateOrder;
 
-public class CreateOrderCommand // TODO: implement interface
+public class CreateOrderCommand : ICommand<CreateOrderDto>, IAmOrderOwner
 {
     public CreateOrderCommand(IEnumerable<Guid> productsIds)
     {
@@ -8,4 +9,6 @@ public class CreateOrderCommand // TODO: implement interface
     }
 
     public IEnumerable<Guid> ProductsIds { get; init; }
+
+    public Guid OrderId => Guid.Empty;
 }

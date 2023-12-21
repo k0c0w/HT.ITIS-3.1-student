@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using System.Security.Claims;
 using Dotnet.Homeworks.Domain.Abstractions.Repositories;
+using Dotnet.Homeworks.Features.Users.Commands.CreateUser.Services;
 using Dotnet.Homeworks.Infrastructure.UnitOfWork;
 using Dotnet.Homeworks.Infrastructure.Validation.PermissionChecker.DependencyInjectionExtensions;
 using Dotnet.Homeworks.Mediator;
@@ -8,8 +9,10 @@ using Dotnet.Homeworks.Mediator.DependencyInjectionExtensions;
 using Dotnet.Homeworks.Tests.Shared.RepositoriesMocks;
 using Dotnet.Homeworks.Tests.Shared.TestEnvironmentBuilder;
 using FluentValidation;
+using MassTransit;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Moq;
 using NSubstitute;
 
 namespace Dotnet.Homeworks.Tests.MongoDb.Helpers;
@@ -36,13 +39,18 @@ public class MongoEnvironmentBuilder : TestEnvironmentBuilder<MongoEnvironment>
     
     public override void SetupServices(Action<IServiceCollection>? configureServices = default)
     {
+        var mockedBus = new Mock<IBus>();
         configureServices += s => s
             .AddSingleton<IOrderRepository, OrderRepositoryMock>()
             .AddSingleton<IProductRepository, ProductRepositoryMock>()
             .AddSingleton(Substitute.For<IUnitOfWork>())
             .AddSingleton<IUserRepository, UserRepositoryMock>()
             .AddMediator(FeaturesAssembly)
-            .AddSingleton(_contextAccessor ?? InitializeContextAccessor());
+            .AddSingleton(_contextAccessor ?? InitializeContextAccessor())
+            .AddSingleton<IRegistrationService, RegistrationService>()
+            .AddSingleton<ICommunicationService>(new CommunicationService(mockedBus.Object))
+            .AddLogging();
+
         configureServices += s => s.AddValidatorsFromAssembly(FeaturesAssembly);
         configureServices += s => s.AddPermissionChecks(FeaturesAssembly);
         configureServices += SetupPipelineBehavior;

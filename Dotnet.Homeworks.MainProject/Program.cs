@@ -3,29 +3,33 @@ using Dotnet.Homeworks.MainProject.Configuration;
 using Dotnet.Homeworks.MainProject.ServicesExtensions.Masstransit;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
-using Dotnet.Homeworks.MainProject.ServicesExtensions.DataAccess;
-using Dotnet.Homeworks.Mediator.DependencyInjectionExtensions;
 using Dotnet.Homeworks.Features.Helpers;
+using Dotnet.Homeworks.MainProject.ServicesExtensions.MongoDb;
+using Dotnet.Homeworks.MainProject.ServicesExtensions.DataAccess;
 
 var builder = WebApplication.CreateBuilder(args);
-var rabbitMQconfig = builder.Configuration.GetSection("RabbitMQ").Get<RabbitMqConfig>()!;
+var services = builder.Services;
+var configuration = builder.Configuration;
+var rabbitMQConfig = builder.Configuration.GetSection("RabbitMQ").Get<RabbitMqConfig>()!;
+var mongoDBConfig = builder.Configuration.GetSection(nameof(MongoDbConfig)).Get<MongoDbConfig>()!;
 
-builder.Services.AddControllers();
+services.AddControllers();
 
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("Default")));
+services.AddFeaturesDependencies();
 
-builder.Services.AddFeaturesDependencies();
+services.AddDbContext<AppDbContext>(options =>
+    options.UseNpgsql(configuration.GetConnectionString("Default")));
+services.RegisterDataAccessServices(configuration);
+services.AddMongoClient(mongoDBConfig);
 
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+services.AddMasstransitRabbitMq(rabbitMQConfig);
+
+services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie();
-builder.Services.AddAuthorization();
+services.AddAuthorization();
 
-builder.Services.AddMasstransitRabbitMq(rabbitMQconfig);
-
-
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+services.AddEndpointsApiExplorer();
+services.AddSwaggerGen();
 
 var app = builder.Build();
 if (app.Environment.IsDevelopment())
