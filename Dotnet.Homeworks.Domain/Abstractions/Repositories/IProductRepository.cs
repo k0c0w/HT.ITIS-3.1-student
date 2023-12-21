@@ -13,4 +13,6 @@ public interface IProductRepository
     Task<Guid> InsertProductAsync(Product product, CancellationToken cancellationToken);
 
     Task<bool> ExistsByIdAsync(Guid id, CancellationToken cancellationToken);
+
+    Task<Product?> GetByIdAsync(Guid id, CancellationToken cancellationToken);
 }

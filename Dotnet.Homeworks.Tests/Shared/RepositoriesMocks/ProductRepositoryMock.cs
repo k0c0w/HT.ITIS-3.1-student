@@ -38,4 +38,9 @@ public class ProductRepositoryMock : IProductRepository
     {
         return Task.FromResult(_products.TryGetValue(id, out var _));
     }
+
+    public Task<Product?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
+    }
 }
