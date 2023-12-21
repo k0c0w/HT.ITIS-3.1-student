@@ -28,8 +28,8 @@ public class AllUserManagementFixture : IDisposable, ICollectionFixture<AllUserM
         };
 
         var types = AssemblyFeatures.GetTypes()
-            .Where(x => x.Namespace.Contains("UserManagement"))
-            .Where(x => x.Name.EndsWith("Command") || x.Name.EndsWith("Query"))
+            .Where(x => x.Namespace != null && x.Namespace.Contains("UserManagement"))
+            .Where(x => x.Name != null && (x.Name.EndsWith("Command") || x.Name.EndsWith("Query")))
             .Select(x => interfaces.IntersectBy(x.GetInterfaces().Select(x => x.Name), type => type.Name));
 
         return types.All(x => x.Any());
@@ -45,8 +45,8 @@ public class AllUserManagementFixture : IDisposable, ICollectionFixture<AllUserM
         };
 
         var types = AssemblyFeatures.GetTypes()
-            .Where(x => x.Namespace.Contains("UserManagement"))
-            .Where(x => x.Name.EndsWith("Handler"))
+            .Where(x => x.Namespace != null && x.Namespace.Contains("UserManagement"))
+            .Where(x => x.Name != null && x.Name.EndsWith("Handler"))
             .Select(x => interfaces.IntersectBy(x.GetInterfaces().Select(x => x.Name), type => type.Name));
 
         return types.All(x => x.Any());
