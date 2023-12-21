@@ -38,9 +38,7 @@ services:
     environment:
         RABBITMQ_DEFAULT_USER: k0c0w
         RABBITMQ_DEFAULT_PASS: itpkldsow12l433kkj
-  #dotnet_minio:
-  #  image: minio/minio:latest
-  #  
+
   #dotnet_mongodb:
   #  image: mongo:latest
   #  
@@ -68,6 +66,28 @@ services:
       dockerfile: Dotnet.Homeworks.Mailing.API/Dockerfile
     depends_on:
       - dotnet_rabbitmq
-    
-  #dotnet_storage:
-  #  image: dotnet-web
+
+  dotnet_storage:
+    image: dotnet_storage
+    container_name: dotnet_storage
+    build:
+      dockerfile: Dotnet.Homeworks.Storage.API/Dockerfile
+    ports:
+      - "7002:80"
+    environment:
+      MinioConfig__Username : minioUser
+      MinioConfig__Password : minioUser123456789
+      MinioConfig__Endpoint : dotnet_minio
+      MinioConfig__Port : 9000
+      MinioConfig__WithSsl : false
+    depends_on:
+      - dotnet_minio
+
+  dotnet_minio:
+    image: minio/minio:latest
+    container_name: dotnet_minio
+    ports:
+      - "9000:9000"
+    environment:
+      MINIO_ROOT_USER : minioUser
+      MINIO_ROOT_PASSWORD : minioUser123456789

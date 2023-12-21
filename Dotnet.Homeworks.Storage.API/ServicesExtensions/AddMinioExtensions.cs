@@ -1,12 +1,17 @@
-using Dotnet.Homeworks.Storage.API.Configuration;
+using Minio;
 
 namespace Dotnet.Homeworks.Storage.API.ServicesExtensions;
 
 public static class AddMinioExtensions
 {
     public static IServiceCollection AddMinioClient(this IServiceCollection services,
-        MinioConfig minioConfiguration)
+        Configuration.MinioConfig minioConfiguration)
     {
-        throw new NotImplementedException();
+        return services.AddMinio(client =>
+        {
+            client.WithSSL(minioConfiguration.WithSsl)
+                  .WithEndpoint(minioConfiguration.Endpoint, minioConfiguration.Port)
+                  .WithCredentials(minioConfiguration.Username, minioConfiguration.Password);
+        }, ServiceLifetime.Singleton);
     }
 }
