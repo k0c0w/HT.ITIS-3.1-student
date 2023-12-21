@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Dotnet.Homeworks.Features.Helpers;
 using Dotnet.Homeworks.MainProject.ServicesExtensions.MongoDb;
 using Dotnet.Homeworks.MainProject.ServicesExtensions.DataAccess;
+using Dotnet.Homeworks.MainProject.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
@@ -32,6 +33,10 @@ services.AddEndpointsApiExplorer();
 services.AddSwaggerGen();
 
 var app = builder.Build();
+
+app.UseMiddleware<RequestCounterMiddleware>();
+app.UseMiddleware<TracingMiddleware>();
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
