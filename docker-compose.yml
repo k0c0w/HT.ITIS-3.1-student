@@ -30,6 +30,7 @@ services:
       RabbitMQ__Hostname: rabbitmq
       RabbitMQ__Port: 5672
       MongoDBConfig__ConnectionString : mongodb://mongoUser:dfmglkdflgmdgflkmdf49330m@dotnet_mongodb:27017/MainProjectDB
+      OpenTelemetryConfig__OtlpExporterEndpoint : http://dotnet_jaeger:4317
 
   dotnet_rabbitmq:
     image: rabbitmq:3-alpine

@@ -7,6 +7,7 @@ using Dotnet.Homeworks.Features.Helpers;
 using Dotnet.Homeworks.MainProject.ServicesExtensions.MongoDb;
 using Dotnet.Homeworks.MainProject.ServicesExtensions.DataAccess;
 using Dotnet.Homeworks.MainProject.Middleware;
+using Dotnet.Homeworks.MainProject.ServicesExtensions.OpenTelemetry;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
@@ -31,6 +32,8 @@ services.AddAuthorization();
 
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGen();
+
+services.AddOpenTelemetry(configuration.GetSection(nameof(OpenTelemetryConfig)).Get<OpenTelemetryConfig>()!);
 
 var app = builder.Build();
 
