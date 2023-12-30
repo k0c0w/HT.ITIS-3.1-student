@@ -1,7 +1,5 @@
-﻿using Dotnet.Homeworks.Features.Orders.Mapping;
-using Dotnet.Homeworks.Features.Products.Mapping;
-using Dotnet.Homeworks.Features.UserManagement.Mapping;
-using Dotnet.Homeworks.Features.Users.Mapping;
+﻿using Dotnet.Homeworks.Features.Mapster.MapServices.Abstractions;
+using Dotnet.Homeworks.Features.Mapster.MapServices.Configuration;
 
 namespace Dotnet.Homeworks.Tests.Mapster;
 

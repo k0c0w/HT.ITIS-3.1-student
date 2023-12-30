@@ -1,4 +1,5 @@
 using Dotnet.Homeworks.Domain.Abstractions.Repositories;
+using Dotnet.Homeworks.Features.Mapster.MapServices.Abstractions;
 using Dotnet.Homeworks.Infrastructure.Cqrs.Queries;
 using Dotnet.Homeworks.Shared.Dto;
 
@@ -7,9 +8,11 @@ namespace Dotnet.Homeworks.Features.UserManagement.Queries.GetAllUsers;
 public class GetAllUsersQueryHandler : IQueryHandler<GetAllUsersQuery, GetAllUsersDto>
 {
     private readonly IUserRepository _userRepository;
+    private readonly IUserManagementMapper _usersMapper;
 
-    public GetAllUsersQueryHandler(IUserRepository userRepository)
+    public GetAllUsersQueryHandler(IUserRepository userRepository, IUserManagementMapper userMapper)
     {
+        _usersMapper = userMapper;
         _userRepository = userRepository;
     }
 
@@ -21,7 +24,7 @@ public class GetAllUsersQueryHandler : IQueryHandler<GetAllUsersQuery, GetAllUse
             if (cancellationToken.IsCancellationRequested)
                 return new Result<GetAllUsersDto>(null, false);
 
-            return new Result<GetAllUsersDto>(new GetAllUsersDto(users.Select(x => new GetUserDto(x.Id, x.Name, x.Email))), true);
+            return new Result<GetAllUsersDto>(_usersMapper.MapFromUsers(users), true);
         }
         catch (Exception ex)
         {

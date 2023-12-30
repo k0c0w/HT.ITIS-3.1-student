@@ -1,7 +1,7 @@
 ﻿namespace Dotnet.Homeworks.Features.Users.Queries.GetUser;
 
 public record GetUserDto (
-    Guid Guid, 
+    Guid Id, 
     string Name, 
     string Email
     );

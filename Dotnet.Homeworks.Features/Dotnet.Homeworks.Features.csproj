@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <TargetFramework>net7.0</TargetFramework>
@@ -15,12 +15,32 @@
     <ItemGroup>
       <PackageReference Include="FluentValidation" Version="11.8.0" />
       <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.8.0" />
+	  <PackageReference Include="Mapster" Version="7.4.0-pre06" />
+	  <PackageReference Include="Mapster.Core" Version="1.2.1" />
       <PackageReference Include="MassTransit" Version="8.1.1" />
     </ItemGroup>
+
+	<!-- Добавление команд для генерации мапперов -->
+	<Target Name="Mapster" AfterTargets="AfterBuild">
+		<Exec WorkingDirectory="$(ProjectDir)" Command="dotnet tool restore" />
+		<Exec WorkingDirectory="$(ProjectDir)" Command="dotnet mapster mapper -a &quot;$(TargetDir)$(ProjectName).dll&quot; -o ./Mapster/MapServices/Generated" />
+		<Exec WorkingDirectory="$(ProjectDir)" Command="dotnet mapster extension -a &quot;$(TargetDir)$(ProjectName).dll&quot; -o ./Mapster/Extensions/Generated" />
+	</Target>
+	<!-- Для очистки сгенерированных файлов командой dotnet msbuild -t:CleanGenerated -->
+	<ItemGroup>
+		<Generated Include="**\*.g.cs" />
+	</ItemGroup>
+	<Target Name="CleanGenerated">
+		<Delete Files="@(Generated)" />
+	</Target>
 
     <ItemGroup>
       <ProjectReference Include="..\Dotnet.Homeworks.Domain\Dotnet.Homeworks.Domain.csproj" />
       <ProjectReference Include="..\Dotnet.Homeworks.Infrastructure\Dotnet.Homeworks.Infrastructure.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Mapster\MapServices\Generated\" />
     </ItemGroup>
 
 </Project>
